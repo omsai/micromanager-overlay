@@ -1,0 +1,20 @@
+--- andor.c	2009-07-29 06:54:31.000000000 -0400
++++ andor-fix-warnings.c	2009-11-05 22:58:22.000000000 -0500
+@@ -136,7 +136,7 @@
+ 
+   if (virt == NULL) {
+     printk("<7>andordrvlx: Failed to allocate DMA region 0\n");
+-    printk("<7>andordrvlx: DMA Addr [0x08X]  Size [%u bytes]\n", dma_addr, sz);    
++    printk("<7>andordrvlx: DMA Addr [%lu]  Size [%u bytes]\n", dma_addr, sz);    
+     printk("<7>andordrvlx: See INSTALL file, 'Supported Kernels'\n");
+     return -EFAULT;
+   }
+@@ -194,7 +194,7 @@
+ 
+   if (virt == NULL) {
+     printk("<7>andordrvlx: Failed to allocate DMA region 1\n");
+-    printk("<7>andordrvlx: DMA Addr [0x08X]  Size [%u bytes]\n", dma_addr, sz);    
++    printk("<7>andordrvlx: DMA Addr [%lu]  Size [%u bytes]\n", dma_addr, sz);    
+     printk("<7>andordrvlx: See Readme section 'Supported Kernels'\n");
+     return -EFAULT;
+   }
