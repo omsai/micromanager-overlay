@@ -1,0 +1,100 @@
+--- configure.in	Tue Jan 24 12:02:21 2012
++++ configure.in	Tue Jan 24 18:23:27 2012
+@@ -21,18 +21,30 @@
+    # Set the CLASSEXT location
+    #----------------------------------------------------------------
+    CLASSEXT=$PWD"/../3rdpartypublic/classext"
+-   echo "CLASSEXT="$CLASSEXT
++
++   AC_MSG_CHECKING(if classext directory exists)
++   if test -r "$CLASSEXT" ; then
++      AC_MSG_RESULT([$CLASSEXT]) 
++   else
++      AC_MSG_WARN([not found])
++   fi
+ 
+    #----------------------------------------------------------------
+    # Find ij.jar in directory
+    #----------------------------------------------------------------
+    AC_MSG_CHECKING(for ij.jar)
+-   IJJARDIR="$CLASSEXT/ij.jar"
+-   echo "IJJARDDIR="$IJJARDIR
+-   if test -r "$IJJARDIR" ; then
+-      IJJARPATH="$IJJARDIR"
+-      AC_MSG_RESULT($IJJARPATH)
+-   fi
++   IJJARDIR="$CLASSEXT/ij.jar
++             $IJPATH/ij.jar
++             $IJPATH/ImageJ.app/Contents/Resources/Java/ij.jar
++             $IJPATH/../java/ij.jar"
++
++   for d in $IJJARDIR ; do
++      if test -r "$d" ; then
++         IJJARPATH="$d"
++         AC_MSG_RESULT($IJJARPATH)
++         break
++      fi
++   done
+ 
+    if test -z "$IJJARPATH"; then
+      AC_MSG_ERROR([not found, Use the without-imagej directive to build without ImageJ or install ImageJ (http://rsb.info.nih.gov/ij/ and rerun configure, possibly using the --with-imagej=path directive])
+@@ -41,7 +53,7 @@
+    #----------------------------------------------------------------
+    # Find beanshell.jar in ImageJ plugins directory
+    #----------------------------------------------------------------
+-   AC_MSG_CHECKING(for beanshell jar file in ImageJ plugins directory)
++   AC_MSG_CHECKING(for beanshell jar file)
+    if test -r "$CLASSEXT/bsh-2.0b4.jar" ; then
+       BSHJARPATH="$CLASSEXT/bsh-2.0b4.jar"
+       AC_MSG_RESULT($BSHJARPATH)
+@@ -57,7 +69,7 @@
+    #----------------------------------------------------------------
+    # Find swingx.jar in ImageJ plugins directory
+    #----------------------------------------------------------------
+-   AC_MSG_CHECKING(for swingx jar file in ImageJ plugins directory)
++   AC_MSG_CHECKING(for swingx jar file)
+    if test -r "$CLASSEXT/swingx-0.9.5.jar" ; then
+       SWINGXJARPATH="$CLASSEXT/swingx-0.9.5.jar"
+       AC_MSG_RESULT($SWINGXJARPATH)
+@@ -88,7 +100,7 @@
+       AC_MSG_RESULT($COMMONSMATHJARPATH)
+    fi
+    if test "$COMMONSMATHJARPATH" = "" ; then
+-      AC_MSG_ERROR([commons-math-2.0.jar not found. It should be in the classext directory.])
++      AC_MSG_ERROR([commons-math-2.0.jar not found.])
+    fi
+ 
+    #----------------------------------------------------------------
+@@ -108,7 +120,7 @@
+       AC_MSG_RESULT($SWINGLAYOUTJARPATH)
+    fi
+    if test "$SWINGLAYOUTJARPATH" = "" ; then
+-      AC_MSG_ERROR([swing-layout-1.0.4.jar not found.  It should be in the classext directory.])
++      AC_MSG_ERROR([swing-layout-1.0.4.jar not found.])
+    fi
+    
+    #----------------------------------------------------------------
+@@ -128,7 +140,7 @@
+       AC_MSG_RESULT($ABSOLUTEJARPATH)
+    fi
+    if test "$ABSOLUTEJARPATH" = "" ; then
+-      AC_MSG_ERROR([AbsoluteLayout.jar not found.  It should be in the classext directory.])
++      AC_MSG_ERROR([AbsoluteLayout.jar not found.])
+    fi
+    #----------------------------------------------------------------
+    # Find JFreeChart 
+@@ -138,7 +150,13 @@
+       JFREECHARTJARPATH="$CLASSEXT/jfreechart-1.0.13.jar:$CLASSEXT/jcommon-1.0.16.jar"
+       AC_MSG_RESULT($JFREECHARTJARPATH)
+    fi
+-   # TODO: look in other paths
++   if test -r "/usr/share/java/jfreechart-1.0.13.jar" ; then
++      ABSOLUTEJARPATH="/usr/share/java/jfreechart-1.0.13.jar"
++      AC_MSG_RESULT($ABOSLUTEJARPATH)
++   fi
++   if test "$JFREECHARTJARPATH" = "" ; then
++      AC_MSG_ERROR([jfreechart-1.0.13.jar not found.])
++   fi
+ fi
+ 
+ 
