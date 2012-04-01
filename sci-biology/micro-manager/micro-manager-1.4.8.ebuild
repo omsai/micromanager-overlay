@@ -1,9 +1,9 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-
+	
 EAPI=2
-inherit eutils subversion autotools
+inherit eutils subversion autotools java-pkg-opt-2 flag-o-matic
 
 DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://valelab.ucsf.edu/~MM/MMwiki/"
@@ -17,20 +17,20 @@ KEYWORDS="~amd64"
 IUSE="+java ieee1394"
 
 RDEPEND="java? (
+		>=virtual/jre-1.5
 		sci-biology/imagej
 		dev-java/bsh
-		dev-java/commons-math
+		dev-java/commons-math:2
 		dev-java/swingx:1.6
-		dev-java/swing-layout
+		dev-java/swing-layout:1
 		dev-java/absolutelayout
-		dev-java/jfreechart
+		dev-java/jfreechart:1.0
 	)
 	ieee1394? ( media-libs/libdc1394 )"
 
 DEPEND="dev-lang/swig
 	dev-libs/boost
-	java? ( >=virtual/jdk-1.5 )
-	${RDEPEND}"
+	java? ( >=virtual/jdk-1.5 )"
 
 if use java; then
 	IMAGEJ_DIR=/usr/share/imagej
@@ -48,18 +48,22 @@ src_prepare() {
 	
 	# epatch need instead of ESVN_PATCHES to patch configure.in
 	epatch ${FILESDIR}/with-imagej_including_r4111_regression.patch
-	# regenerate autotools files
-	eautoreconf || die "eautoreconf failed"
+	eautoconf || die "eautoconf to apply patched configure.in failed"
+
+	# FIXME	eautoreconf should replace eautoconf and subversion_bootstrap
+	#	lines, but dies because ./Makefile.am searches for the
+	#	non-existent SecretDeviceAdapters directory
+	#eautoreconf || die "eautoreconf to apply patched configure.in failed"
 }
 
 src_configure() {
-	econf \
-		--with-imagej=${IMAGEJ_DIR}
+        use java && append-cppflags $(java-pkg_get-jni-cflags)
+
+	econf --with-imagej=${IMAGEJ_DIR} || die
 }
 
 src_compile() {
-	emake \
-		|| die "build failed"
+	emake || die
 }
 
 src_install() {
@@ -79,9 +83,9 @@ src_install() {
 #export LD_LIBRARY_PATH=.:/usr/local/lib:/usr/${lib}/micro-manager:$IMAGEJ_DIR
 #java -mx1200m -Djava.library.path=/usr/${lib}/micro-manager:$IMAGEJ_DIR \
 #-Dplugins.dir=$IMAGEJDIR \
-#-cp $IMAGEJDIR/ij.jar ij.ImageJ
+#-cp $IMAGEJDIR/lib/ij.jar ij.ImageJ
 #EOF
 
 	dodir "/usr/${lib}/${PN}"
-	emake DESTDIR="${D}" install || die "make install failed"
+	emake DESTDIR="${D}" install || die
 }
