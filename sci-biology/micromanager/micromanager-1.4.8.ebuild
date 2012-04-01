@@ -9,7 +9,6 @@ DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://valelab.ucsf.edu/~MM/MMwiki/"
 ESVN_REPO_URI="https://valelab.ucsf.edu/svn/micromanager2/trunk"
 ESVN_BOOTSTRAP="mmUnixBuild.sh"
-#ESVN_PATCHES="${FILESDIR}/*.patch"
 ESVN_REVISION=9145
 
 SLOT="0"
@@ -41,7 +40,12 @@ src_unpack() {
 
 src_prepare() {
 	subversion_bootstrap
-	epatch ${FILESDIR}/*.patch
+	
+	# epatch need instead of ESVN_PATCHES to patch configure.in
+	epatch ${FILESDIR}/with-imagej_including_r4111_regression.patch
+	
+	einfo "Regenerating autotools files..."
+	WANT_AUTOCONF=2.5 autoconf || die "autoconf failed"
 }
 
 src_configure() {
