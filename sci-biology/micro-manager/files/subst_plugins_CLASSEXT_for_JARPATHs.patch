@@ -1,0 +1,11 @@
+--- plugins/Makefile.am	2012-04-01 16:32:02.363000018 -0400
++++ plugins/Makefile.am.new	2012-04-01 16:31:20.010000018 -0400
+@@ -108,7 +108,7 @@
+ 	test -d DataBrowser/classes || mkdir DataBrowser/classes
+ 	rm -rf DataBrowser/classes/*
+ 	cp -R DataBrowser/src/org DataBrowser/classes/
+-	java -cp DataBrowser/classes/:$(CLASSEXT)/clojure.jar:$(CLASSEXT)/clojure-contrib.jar:$(CLASSEXT)/data.json.jar:$(IJJARPATH):../MMCoreJ_wrap/MMCoreJ.jar:../mmstudio/MMJ_.jar:$(CLASSEXT)/bsh-2.0b4.jar:../acqEngine/MMAcqEngine.jar:DataBrowser/src -Djava.awt.headless=true -Dclojure.compile.path=DataBrowser/classes -server clojure.lang.Compile org.micromanager.browser.plugin
++	java -cp DataBrowser/classes/:$(CLOJUREJARPATH):$(DATAJSONJARPATH):$(IJJARPATH):../MMCoreJ_wrap/MMCoreJ.jar:../mmstudio/MMJ_.jar:$(CLASSEXT)/bsh-2.0b4.jar:../acqEngine/MMAcqEngine.jar:DataBrowser/src -Djava.awt.headless=true -Dclojure.compile.path=DataBrowser/classes -server clojure.lang.Compile org.micromanager.browser.plugin
+ 	jar cvf DataBrowser.jar -C DataBrowser/classes/ .
+ 
+ 

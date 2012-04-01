@@ -1,0 +1,11 @@
+--- acqEngine/Makefile.am	2012-04-01 14:12:24.969999994 -0400
++++ acqEngine/Makefile.am.new	2012-04-01 14:08:45.768000001 -0400
+@@ -5,7 +5,7 @@
+ 	test -d classes || mkdir classes
+ 	rm -rf classes/*
+ 	cp -R src/org classes/
+-	java -server -cp ../MMCoreJ_wrap/MMCoreJ.jar:$(CLASSEXT)/clojure.jar:$(IJJARPATH):../mmstudio/MMJ_.jar:$(CLASSEXT)/bsh-2.0b4.jar:./src -Djava.library.path=. -Djava.awt.headless=true -Dclojure.compile.path=classes -server clojure.lang.Compile org.micromanager.acq-engine
++	java -server -cp ../MMCoreJ_wrap/MMCoreJ.jar:$(CLOJUREJARPATH):$(IJJARPATH):../mmstudio/MMJ_.jar:$(BSHJARPATH):./src -Djava.library.path=. -Djava.awt.headless=true -Dclojure.compile.path=classes -server clojure.lang.Compile org.micromanager.acq-engine
+ 	jar cvf MMAcqEngine.jar -C classes/ .    
+ 
+ all: ../mmstudio MMAcqEngine.jar

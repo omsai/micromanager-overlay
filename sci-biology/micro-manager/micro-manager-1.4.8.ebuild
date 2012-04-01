@@ -18,6 +18,13 @@ IUSE="+java ieee1394"
 
 RDEPEND="java? (
 		>=virtual/jre-1.5
+	)
+	ieee1394? ( media-libs/libdc1394 )"
+
+DEPEND="dev-lang/swig
+	dev-libs/boost
+	java? ( 
+		>=virtual/jdk-1.5 
 		sci-biology/imagej
 		dev-java/bsh
 		dev-java/commons-math:2
@@ -25,12 +32,8 @@ RDEPEND="java? (
 		dev-java/swing-layout:1
 		dev-java/absolutelayout
 		dev-java/jfreechart:1.0
-	)
-	ieee1394? ( media-libs/libdc1394 )"
-
-DEPEND="dev-lang/swig
-	dev-libs/boost
-	java? ( >=virtual/jdk-1.5 )"
+		dev-lang/clojure:1.3
+	)"
 
 if use java; then
 	IMAGEJ_DIR=/usr/share/imagej
@@ -46,10 +49,15 @@ src_unpack() {
 src_prepare() {
 	subversion_bootstrap
 	
-	# epatch need instead of ESVN_PATCHES to patch configure.in
-	epatch ${FILESDIR}/with-imagej_including_r4111_regression.patch
-	eautoconf || die "eautoconf to apply patched configure.in failed"
+	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
+	epatch ${FILESDIR}/with-imagej_including_r4111_regression.patch \
+		|| die "patching ./configure.in failed"
+	epatch ${FILESDIR}/subst_acqEngine_CLASSEXT_for_JARPATHs.patch \
+		|| die "patching ./acqEngine/Makefile.am failed"
+	epatch ${FILESDIR}/subst_plugins_CLASSEXT_for_JARPATHs.patch \
+		|| die "patching ./plugins/Makefile.am failed"
 
+	eautoconf || die "eautoconf to apply patched configure.in failed"
 	# FIXME	eautoreconf should replace eautoconf and subversion_bootstrap
 	#	lines, but dies because ./Makefile.am searches for the
 	#	non-existent SecretDeviceAdapters directory
@@ -63,29 +71,17 @@ src_configure() {
 }
 
 src_compile() {
-	emake || die
+	if use java ; then
+		# -j1 is needed for an upstream bug:
+		# ./plugins/Makefile.am uses and clears a single `build'
+		# directory which prevents multiple plugins from being
+		# built simultaneously
+		emake -j1 || die
+	else
+		emake || die
+	fi
 }
 
 src_install() {
-	local lib
-	if use amd64; then
-		lib="lib64"
-	else
-		lib="lib"
-	fi
-
-#	if use java ; then
-#		einfo "Creating launcher script..."
-#		insinto /usr/bin
-#		cat <<EOF >${LAUNCHER_NAME}
-##!/bin/bash
-#cd $IMAGEJ_DIR
-#export LD_LIBRARY_PATH=.:/usr/local/lib:/usr/${lib}/micro-manager:$IMAGEJ_DIR
-#java -mx1200m -Djava.library.path=/usr/${lib}/micro-manager:$IMAGEJ_DIR \
-#-Dplugins.dir=$IMAGEJDIR \
-#-cp $IMAGEJDIR/lib/ij.jar ij.ImageJ
-#EOF
-
-	dodir "/usr/${lib}/${PN}"
 	emake DESTDIR="${D}" install || die
 }
