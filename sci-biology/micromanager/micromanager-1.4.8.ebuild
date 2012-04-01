@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI=2
-inherit eutils subversion
+inherit eutils subversion autotools
 
 DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://valelab.ucsf.edu/~MM/MMwiki/"
@@ -14,9 +14,9 @@ ESVN_REVISION=9145
 SLOT="0"
 LICENSE="BSD"
 KEYWORDS="~amd64"
-IUSE="+imagej ieee1394"
+IUSE="+java ieee1394"
 
-RDEPEND="imagej? (
+RDEPEND="java? (
 		sci-biology/imagej
 		dev-java/bsh
 		dev-java/commons-math
@@ -29,9 +29,14 @@ RDEPEND="imagej? (
 
 DEPEND="dev-lang/swig
 	dev-libs/boost
+	java? ( >=virtual/jdk-1.5 )
 	${RDEPEND}"
 
-IMAGEJ_DIR=/usr/share/imagej
+if use java; then
+	IMAGEJ_DIR=/usr/share/imagej
+else
+	IMAGEJ_DIR="no"
+fi
 LAUNCHER_NAME=${PN}
 
 src_unpack() {
@@ -43,9 +48,8 @@ src_prepare() {
 	
 	# epatch need instead of ESVN_PATCHES to patch configure.in
 	epatch ${FILESDIR}/with-imagej_including_r4111_regression.patch
-	
-	einfo "Regenerating autotools files..."
-	WANT_AUTOCONF=2.5 autoconf || die "autoconf failed"
+	# regenerate autotools files
+	eautoreconf || die "eautoreconf failed"
 }
 
 src_configure() {
@@ -54,7 +58,8 @@ src_configure() {
 }
 
 src_compile() {
-	emake || die "make failed"
+	emake \
+		|| die "build failed"
 }
 
 src_install() {
@@ -65,7 +70,7 @@ src_install() {
 		lib="lib"
 	fi
 
-#	if use imagej ; then
+#	if use java ; then
 #		einfo "Creating launcher script..."
 #		insinto /usr/bin
 #		cat <<EOF >${LAUNCHER_NAME}
