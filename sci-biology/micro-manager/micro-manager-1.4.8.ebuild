@@ -47,7 +47,7 @@ src_prepare() {
 	if use java; then
 		# making and clearing a single `build' directory prevents
 		# multiple plugins from being built simultaneously
-		sed -i -e 's/build/$@/' plugins/Makefile.am
+		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
 
 		eautoconf || die "eautoconf for patched Makefile.am failed"
 		# FIXME	eautoreconf should replace eautoconf and 
