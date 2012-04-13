@@ -74,12 +74,14 @@ src_configure() {
 		java-pkg_jar-from commons-math-2 commons-math.jar commons-math-2.0.jar
 		java-pkg_jar-from swing-layout-1 swing-layout.jar swing-layout-1.0.4.jar
 		java-pkg_jar-from absolutelayout absolutelayout.jar AbsoluteLayout.jar
-		java-pkg_jar-from jfreechart-1.0 jfreechart.jar JFreeChart-1.0.13.jar
+		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
 		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
 #		clooj,
 #		gproto,
 #		data.json,
+#		lwm,
+#		TSFProto
 		popd
 		eend
 	else
