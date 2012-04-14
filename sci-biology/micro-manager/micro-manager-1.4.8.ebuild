@@ -25,7 +25,7 @@ DEPEND="dev-lang/swig
 	dev-libs/boost
 	java? ( 
 		>=virtual/jdk-1.5 
-		sci-biology/imagej
+		sci-biology/imagej[plugins]
 		dev-java/bsh
 		dev-java/commons-math:2
 		dev-java/swingx:1.6
@@ -65,9 +65,7 @@ src_configure() {
 	if use java; then
 		append-cppflags $(java-pkg_get-jni-cflags)
 
-		IMAGEJ_DIR=$(dirname \
-			$(dirname `java-pkg_getjar imagej ij.jar`) \
-			)
+		IMAGEJ_DIR=$(dirname `java-pkg_getjar imagej ij.jar`) \
 
 		ebegin 'Creating symlinks to .jar dependencies...'
 		mkdir -p ../3rdpartypublic/classext/
@@ -98,13 +96,19 @@ src_compile() {
 src_install() {
 	emake DESTDIR="${D}" install || die
 
-	java-pkg_dolauncher \
+	${jargs} =  '-Xmx1024m '
+	${jargs} += '-cp $(java-config -p imagej):$(java-config -0)/lib/tools.jar '
+	${jargs} += '-Dswing.aatext=true '
+	${jargs} += '-Dawt.useSystemAAFontSettings=on '
+
+	if use amd64; then
+		${jargs} += '-Djava.library.path=/usr/lib64/micro-manager '
+	else
+		${jargs} += '-Djava.library.path=/usr/lib/micro-manager '
+	fi
+
+	java-pkg_dolauncher ${PN} \
 		--main ij.ImageJ \
-		--java_args \
-			-Xmx1024m \
-			-Dswing.aatext=true \
-			-Dawt.useSystemAAFontSettings=on \
-			-Djava.library.path=/usr/lib/micro-manager \
-			-cp ${IJ_CP} \
-		${PN}
+		--java_args '${jargs}' \
+		--pkg-args '-run "Micro-Manager Studio"'
 }
