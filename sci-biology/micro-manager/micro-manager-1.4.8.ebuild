@@ -43,6 +43,9 @@ src_unpack() {
 src_prepare() {
 	subversion_bootstrap
 
+	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
+	 epatch ${FILESDIR}/plugins_whitelist.patch
+
 	if use java; then
 		# making and clearing a single `build' directory prevents
 		# multiple plugins from being built simultaneously
