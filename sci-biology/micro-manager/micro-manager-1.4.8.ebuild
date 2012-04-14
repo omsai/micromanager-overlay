@@ -25,7 +25,7 @@ DEPEND="dev-lang/swig
 	dev-libs/boost
 	java? ( 
 		>=virtual/jdk-1.5 
-		sci-biology/imagej[plugins]
+		>=sci-biology/imagej-1.46e[plugins]
 		dev-java/bsh
 		dev-java/commons-math:2
 		dev-java/swingx:1.6
