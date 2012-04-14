@@ -44,8 +44,11 @@ src_prepare() {
 	subversion_bootstrap
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
-	 epatch ${FILESDIR}/plugins_whitelist.patch
-	 epatch ${FILESDIR}/ij_plugin_sandbox.patch
+	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
+
+	# TODO Make ebuilds for clooj, gproto, data.json, lwm, TSFProto
+	#      Removing plugins requiring these deps untill ebuilds made
+	epatch ${FILESDIR}/remove_plugins_with_unresolved_deps.patch
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
