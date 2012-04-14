@@ -1,0 +1,10 @@
+--- mmstudio/Makefile.am	2012-04-14 01:25:13.012000054 -0400
++++ mmstudio/Makefile.am.new	2012-04-14 10:35:23.779000024 -0400
+@@ -145,7 +145,6 @@
+ install: 
+ 	test -d $(DESTDIR)$(IJPATH)/plugins/Micro-Manager || mkdir -p $(DESTDIR)$(IJPATH)/plugins/Micro-Manager
+ 	cp MMJ_.jar $(DESTDIR)$(IJPATH)/plugins/Micro-Manager
+-	cp $(IJJARPATH) $(DESTDIR)$(IJPATH)
+ 	cp $(CLASSEXT)/*.jar $(DESTDIR)$(IJPATH)/plugins/
+ 	rm $(DESTDIR)$(IJPATH)/plugins/ij.jar
+ 

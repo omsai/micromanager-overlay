@@ -45,6 +45,7 @@ src_prepare() {
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
 	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
+	epatch ${FILESDIR}/prevent_imagej_collisions.patch
 
 	# TODO Make ebuilds for clooj, gproto, data.json, lwm, TSFProto
 	#      Removing plugins requiring these deps untill ebuilds made
