@@ -1,0 +1,8 @@
+--- scripts/Makefile.am	2012-04-13 23:01:39.086000024 -0400
++++ scripts/Makefile.am.new	2012-04-13 23:11:35.951000004 -0400
+@@ -1,5 +1,4 @@
+ install:
+-	rm -rf $(IJPATH)/scripts || echo "no problem"
+ 	mkdir -p $(DESTDIR)$(IJPATH)/scripts
+ 	cp AutoExpose.bsh $(DESTDIR)$(IJPATH)/scripts/
+ 	cp Init.bsh $(DESTDIR)$(IJPATH)/scripts/

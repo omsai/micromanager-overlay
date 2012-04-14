@@ -45,6 +45,7 @@ src_prepare() {
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
 	 epatch ${FILESDIR}/plugins_whitelist.patch
+	 epatch ${FILESDIR}/ij_plugin_sandbox.patch
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
