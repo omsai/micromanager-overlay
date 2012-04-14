@@ -34,7 +34,6 @@ DEPEND="dev-lang/swig
 		dev-java/jfreechart:1.0
 		dev-lang/clojure:1.3
 		dev-lang/clojure-contrib:1.1
-		dev-util/clooj
 	)"
 
 src_unpack() {
@@ -77,11 +76,8 @@ src_configure() {
 		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
 		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
-#		clooj,
-#		gproto,
-#		data.json,
-#		lwm,
-#		TSFProto
+		# TODO: Make these dep ebuilds and symlinks for plugins:
+		# clooj, gproto, data.json, lwm, TSFProto
 		popd
 		eend
 	else
