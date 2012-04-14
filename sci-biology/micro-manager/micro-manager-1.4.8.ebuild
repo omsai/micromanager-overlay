@@ -100,19 +100,19 @@ src_compile() {
 src_install() {
 	emake DESTDIR="${D}" install || die
 
-	${jargs} =  '-Xmx1024m '
-	${jargs} += '-cp $(java-config -p imagej):$(java-config -0)/lib/tools.jar '
-	${jargs} += '-Dswing.aatext=true '
-	${jargs} += '-Dawt.useSystemAAFontSettings=on '
+	jargs='-Xmx1024m '
+	jargs+='-cp $(java-config -p imagej):$(java-config -O)/lib/tools.jar '
+	jargs+='-Dswing.aatext=true '
+	jargs+='-Dawt.useSystemAAFontSettings=on '
 
 	if use amd64; then
-		${jargs} += '-Djava.library.path=/usr/lib64/micro-manager '
+		jargs+='-Djava.library.path=/usr/lib64/micro-manager'
 	else
-		${jargs} += '-Djava.library.path=/usr/lib/micro-manager '
+		jargs+='-Djava.library.path=/usr/lib/micro-manager'
 	fi
 
 	java-pkg_dolauncher ${PN} \
 		--main ij.ImageJ \
-		--java_args '${jargs}' \
-		--pkg-args '-run "Micro-Manager Studio"'
+		--java_args "${jargs}" \
+		--pkg-args "-run 'Micro-Manager Studio'"
 }
