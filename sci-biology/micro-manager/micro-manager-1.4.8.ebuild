@@ -101,12 +101,29 @@ src_install() {
 	emake DESTDIR="${D}" install || die
 
 	if use java; then
-		jargs='-Xmx1024m '
-		jargs+='-cp $(java-config -p imagej) '
+		# FIXME	java-pkg_dolauncher should replace this bash script.
+		#	Problems encountered when attempting this were:
+		#	1. dolauncher uses the same name for the launcher and
+		#	   the package (gjl_package).  What we want for this
+		#	   package is:
+		#		/usr/bin/micro-manager
+		#	   to contain:
+		#		gjl_package=imagej
+		#	2. Fixing issue #1 above by editing the output file
+		#	   creates unusual behavior with Micro-Manager, always
+		#	   asking to select a dataset to open on startup.
+		cat <<-EOF > "${T}"/${PN}
+		#!/bin/bash
+		
+		# MM plugins won't load without changing to this path
+		cd /usr/share/imagej/lib
 
-		java-pkg_dolauncher \
-			--main ij.ImageJ \
-			--java_args "${jargs}" \
-			--pkg_args "-run 'Micro-Manager Studio'"
+		$(java-config --java) \\
+		   -mx1024m \\
+		   -cp \$(java-config -p imagej,libreadline-java) \\
+		   ij.ImageJ -run "Micro-Manager Studio"
+		EOF
+
+		dobin "${T}"/${PN}
 	fi
 }
