@@ -114,6 +114,6 @@ src_install() {
 	java-pkg_dolauncher \
 		--main ij.ImageJ \
 		--java_args "${jargs}" \
-		--pkg-args "-run 'Micro-Manager Studio'"\
+		--pkg_args "-run 'Micro-Manager Studio'" \
 		imagej
 }
