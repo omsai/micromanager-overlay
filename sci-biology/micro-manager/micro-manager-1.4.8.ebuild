@@ -100,12 +100,13 @@ src_compile() {
 src_install() {
 	emake DESTDIR="${D}" install || die
 
-	jargs='-Xmx1024m '
-	jargs+='-cp $(java-config -p imagej) '
+	if use java; then
+		jargs='-Xmx1024m '
+		jargs+='-cp $(java-config -p imagej) '
 
-	java-pkg_dolauncher \
-		--main ij.ImageJ \
-		--java_args "${jargs}" \
-		--pkg_args "-run 'Micro-Manager Studio'" \
-		imagej
+		java-pkg_dolauncher \
+			--main ij.ImageJ \
+			--java_args "${jargs}" \
+			--pkg_args "-run 'Micro-Manager Studio'"
+	fi
 }
