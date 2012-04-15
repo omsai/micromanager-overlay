@@ -101,15 +101,7 @@ src_install() {
 	emake DESTDIR="${D}" install || die
 
 	jargs='-Xmx1024m '
-	jargs+='-cp $(java-config -p imagej):$(java-config -O)/lib/tools.jar '
-	jargs+='-Dswing.aatext=true '
-	jargs+='-Dawt.useSystemAAFontSettings=on '
-
-	if use amd64; then
-		jargs+='-Djava.library.path=/usr/lib64/micro-manager'
-	else
-		jargs+='-Djava.library.path=/usr/lib/micro-manager'
-	fi
+	jargs+='-cp $(java-config -p imagej) '
 
 	java-pkg_dolauncher \
 		--main ij.ImageJ \
