@@ -111,8 +111,9 @@ src_install() {
 		jargs+='-Djava.library.path=/usr/lib/micro-manager'
 	fi
 
-	java-pkg_dolauncher ${PN} \
+	java-pkg_dolauncher \
 		--main ij.ImageJ \
 		--java_args "${jargs}" \
-		--pkg-args "-run 'Micro-Manager Studio'"
+		--pkg-args "-run 'Micro-Manager Studio'"\
+		imagej
 }
