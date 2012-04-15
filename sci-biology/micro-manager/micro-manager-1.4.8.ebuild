@@ -124,6 +124,9 @@ src_install() {
 		   ij.ImageJ -run "Micro-Manager Studio"
 		EOF
 
+		make_desktop_entry "${PN}" "Micro-Manager Studio" imagej.png \
+			"Graphics;Science;Biology"
+
 		dobin "${T}"/${PN}
 	fi
 }
