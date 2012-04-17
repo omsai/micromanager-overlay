@@ -3,7 +3,7 @@
 
 EAPI=2
 
-inherit java-pkg-2 java-maven-2
+inherit java-maven-2
 
 DESCRIPTION="JSON in Clojure"
 HOMEPAGE="https://github.com/clojure/data.json"
@@ -17,7 +17,7 @@ SRC_URI="https://github.com/clojure/data.json/tarball/data.json-0.1.2
          -> data.json-${PV}.tar.gz"
 S="${WORKDIR}/clojure-data.json-5a17048"
 
-CDEPEND="=dev-lang/clojure-1.3"
+CDEPEND="dev-lang/clojure:1.3"
 DEPEND=">=virtual/jdk-1.5
 	${CDEPEND}"
 RDEPEND=">=virtual/jre-1.5
