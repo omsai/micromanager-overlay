@@ -3,6 +3,7 @@
 # $Header: $
 	
 EAPI=2
+
 inherit eutils subversion autotools java-pkg-opt-2 flag-o-matic java-utils-2
 
 DESCRIPTION="The Open Source Microscopy Software"
@@ -34,6 +35,7 @@ DEPEND="dev-lang/swig
 		dev-java/jfreechart:1.0
 		dev-lang/clojure:1.3
 		dev-lang/clojure-contrib:1.1
+		sci-libs/TSFproto
 	)"
 
 src_unpack() {
@@ -47,7 +49,7 @@ src_prepare() {
 	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
 	epatch ${FILESDIR}/prevent_imagej_collisions.patch
 
-	# TODO Make ebuilds for clooj, gproto, data.json, lwm, TSFProto
+	# TODO Make ebuilds for clooj, data.json, lwm, TSFProto
 	#      Removing plugins requiring these deps untill ebuilds made
 	epatch ${FILESDIR}/remove_plugins_with_unresolved_deps.patch
 
@@ -82,8 +84,10 @@ src_configure() {
 		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
 		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
+		java-pkg_jar-from protobuf protobuf.jar gproto.jar
+		java-pkg_jar-from TSFproto
 		# TODO: Make these dep ebuilds and symlinks for plugins:
-		# clooj, gproto, data.json, lwm, TSFProto
+		# clooj, data.json, lwm
 		popd
 		eend
 	else
