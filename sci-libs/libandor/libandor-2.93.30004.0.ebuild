@@ -82,8 +82,6 @@ src_compile() {
 	if use modules; then
 		cd src/driver
 
-		set_arch_to_kernel
-
 		emake LINUXDIR="${KERNEL_DIR}" \
 			|| die "Kernel module compile failed"
 	fi
