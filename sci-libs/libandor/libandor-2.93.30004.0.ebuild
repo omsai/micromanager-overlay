@@ -158,8 +158,8 @@ src_install() {
 
 	# Documentation
 	#
-	dodoc INSTALL README ReleaseNotes || die "dodoc failed"
 	insinto ${ANDOR_HOME}/doc
+	doins INSTALL README ReleaseNotes || die "dodoc failed"
 	doins doc/*.pdf || die "dodoc PDF manual failed"
 }
 
