@@ -150,9 +150,11 @@ src_install() {
 
 	# USB udev rule
 	#
-	insinto /lib/udev/rules.d
-	newins script/andor.rules andor-usb.rules \
-               || die "newins usb udev rule failed"
+	if use usb; then
+		insinto /lib/udev/rules.d
+		newins script/andor.rules andor-usb.rules \
+			|| die "newins usb udev rule failed"
+	fi
 
 	# Documentation
 	#
