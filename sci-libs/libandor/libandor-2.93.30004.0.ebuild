@@ -21,10 +21,7 @@ IUSE="+modules +usb"
 RESTRICT="fetch"
 
 DEPEND=""
-RDEPEND="usb? (
-		virtual/libusb:0
-		sys-fs/udev
-	)"
+RDEPEND="usb? (	virtual/libusb:0 )"
 
 ANDOR_HOME=/opt/andor
 SDKLIB=""
@@ -50,7 +47,15 @@ pkg_setup() {
 		ewarn "requirement of Andor USB cameras.  You may see" && \
 		ewarn "DRV_USB_INTERRUPT_ENDPOINT_ERROR from ${PN}"
 
-	use x86 && SDKLIB=libandor-stdc++6-i386.so.${PV}
+	if use x86; then
+		/sbin/ldconfig -p 2>&1 | grep libstdc++.so.6 1>/dev/null
+		lib6=`echo $?`
+		if [ $lib6 = 0 ]; then
+			SDKLIB=libandor-stdc++6-i386.so.${PV}
+		else
+			SDKLIB=libandor-stdc++5-i386.so.${PV}
+		fi
+	fi
 	use amd64 && SDKLIB=libandor-stdc++6-x86_64.so.${PV}
 }
 
@@ -163,6 +168,6 @@ pkg_postinst() {
 		elog "  /etc/andor/Detector.ini"
 		elog "Also unset DMA_MODE=1 parameter from /etc/modprobe.d/andor.conf"
 		echo
-		elog "See ReleaseNotes for details"
+		elog "For both see ReleaseNotes for details"
 	fi
 }
