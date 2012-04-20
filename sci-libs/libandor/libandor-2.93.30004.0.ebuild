@@ -102,8 +102,6 @@ src_install() {
 
 		# Startup script
 		#
-		# TODO: warn PCI users to remove DMA_MODE
-		#
 		dosbin script/andordrvlx_load \
 			 || die "dosbin load module failed"
 		echo "install andordrvlx /usr/sbin/andordrvlx_load DMA_MODE=1" \
@@ -159,8 +157,7 @@ src_install() {
 	# Documentation
 	#
 	insinto ${ANDOR_HOME}/doc
-	doins INSTALL README ReleaseNotes || die "dodoc failed"
-	doins doc/*.pdf || die "dodoc PDF manual failed"
+	doins INSTALL README ReleaseNotes doc/*.pdf || die "dodoc failed"
 }
 
 pkg_postinst() {
@@ -169,6 +166,7 @@ pkg_postinst() {
 		echo
 		elog "Non-iXon PCI camera users must edit the [system] section in"
 		elog "  /etc/andor/Detector.ini"
+		elog "Also unset DMA_MODE=1 parameter from /etc/modprobe.d/andor.conf"
 		echo
 		elog "For both see ReleaseNotes for details"
 	fi
