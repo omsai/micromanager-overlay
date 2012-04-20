@@ -100,11 +100,11 @@ src_install() {
 
 		# Startup script
 		#
-		# TODO: default to iXon and warn PCI users to remove DMA_MODE
+		# TODO: warn PCI users to remove DMA_MODE
 		#
 		dosbin script/andordrvlx_load \
 			 || die "dosbin load module failed"
-		echo "install andordrvlx /usr/sbin/andordrvlx_load" \
+		echo "install andordrvlx /usr/sbin/andordrvlx_load DMA_MODE=1" \
 			 >> ${T}/andor.conf
 		insinto /etc/modprobe.d
 		newins ${T}/andor.conf
