@@ -37,13 +37,13 @@ pkg_setup() {
 		die "Select at least one USE flag"
 
 	use modules && kernel_is ge 2 6 24 && kernel_is lt 2 6 27 && \
-		die "Kernel not compatible between 2.6.24 and 2.6.27"
+		die "PCI module not compatible with kernels between 2.6.24 and 2.6.27"
 	use modules && linux-mod_pkg_setup
 
 	use usb && kernel_is le 2 4 && \
 		die "2.4 kernels do not fully support USB"
 	use usb && kernel_is lt 2 6 10 && \
-		ewarn "Kernels less < 2.6.10 may not support the interrupt polling rate" && \
+		ewarn "Kernels < 2.6.10 may not support the interrupt polling rate" && \
 		ewarn "requirement of Andor USB cameras.  You may see" && \
 		ewarn "DRV_USB_INTERRUPT_ENDPOINT_ERROR from ${PN}"
 
@@ -103,16 +103,13 @@ src_install() {
 		# Startup script
 		#
 		# TODO: default to iXon and warn PCI users to remove DMA_MODE
-		# TODO: use a udev rule instead to load andordrvlx and perform associated actions
 		#
-		dosbin script/andordrvlx_load andordrvlx_module_load \
+		dosbin script/andordrvlx_load \
 			 || die "dosbin load module failed"
-		ewarn "iXon users MUST add the kernel mem= parameter in your boot loader."
-		ewarn "Then on startup run as root:"
-		ewarn "  /etc/modprobe.d/andor.conf DMA_MODE=1"
-		elog "Other PCI camera users must run just:"
-		elog "  /etc/modprobe.d/andor.conf"
-		elog "non-iXon PCI camera users must edit Detector.ini per ReleaseNotes"
+		echo "install andordrvlx /usr/sbin/andordrvlx_load" \
+			 >> ${T}/andor.conf
+		insinto /etc/modprobe.d
+		newins ${T}/andor.conf
 	fi
 
 	# SDK header
@@ -161,8 +158,19 @@ src_install() {
 
 	# Documentation
 	#
-	insinto ${ANDOR_HOME}/doc
+	docinto ${ANDOR_HOME}/doc
 	dodoc doc/*.pdf || die "dodoc *.pdf failed"
 	dodoc INSTALL || die "dodoc INSTALL failed"
 	dodoc ReleaseNotes || die "dodoc ReleaseNotes failed"
+}
+
+post_install() {
+	if use module; then
+		ewarn "iXon users MUST add the kernel mem= parameter in your boot loader."
+		echo
+		elog "Non-iXon PCI camera users must edit the [system] section in"
+		elog "  /etc/andor/Detector.ini"
+		echo
+		elog "For both see ReleaseNotes for details"
+	fi
 }
