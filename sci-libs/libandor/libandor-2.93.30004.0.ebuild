@@ -21,7 +21,10 @@ IUSE="+modules +usb"
 RESTRICT="fetch"
 
 DEPEND=""
-RDEPEND="usb? ( virtual/libusb:0 )"
+RDEPEND="usb? (
+		virtual/libusb:0
+		sys-fs/udev
+	)"
 
 ANDOR_HOME=/opt/andor
 SDKLIB=""
