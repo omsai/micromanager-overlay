@@ -82,6 +82,8 @@ src_compile() {
 	if use modules; then
 		cd src/driver
 
+		set_arch_to_kernel
+
 		emake LINUXDIR="${KERNEL_DIR}" \
 			|| die "Kernel module compile failed"
 	fi
@@ -107,7 +109,7 @@ src_install() {
 		echo "install andordrvlx /usr/sbin/andordrvlx_load DMA_MODE=1" \
 			 >> ${T}/andor.conf
 		insinto /etc/modprobe.d
-		newins ${T}/andor.conf
+		doins ${T}/andor.conf || die "doins andor.conf failed"
 	fi
 
 	# SDK header
@@ -156,14 +158,13 @@ src_install() {
 
 	# Documentation
 	#
-	docinto ${ANDOR_HOME}/doc
-	dodoc doc/*.pdf || die "dodoc *.pdf failed"
-	dodoc INSTALL || die "dodoc INSTALL failed"
-	dodoc ReleaseNotes || die "dodoc ReleaseNotes failed"
+	dodoc INSTALL README ReleaseNotes || die "dodoc failed"
+	insinto ${ANDOR_HOME}/doc
+	doins doc/*.pdf || die "dodoc PDF manual failed"
 }
 
-post_install() {
-	if use module; then
+pkg_postinst() {
+	if use modules; then
 		ewarn "iXon users MUST add the kernel mem= parameter in your boot loader."
 		echo
 		elog "Non-iXon PCI camera users must edit the [system] section in"
