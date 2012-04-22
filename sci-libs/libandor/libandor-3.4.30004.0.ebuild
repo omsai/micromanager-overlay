@@ -7,11 +7,13 @@ inherit linux-mod
 EAPI=2
 
 ZIP="Andor_SDK3_(Linux)_V${PV}.zip"
-TARBALL="andor-${PV}.tar.gz"
+TARBALL="andor-sdk3-${PV}.tgz"
+AUTOTOOLS_FILES="sdk3-autotools.tar.bz2"
 
 DESCRIPTION="SDK library for scientific CMOS cameras"
 HOMEPAGE="http://www.andor.com/software/sdk/"
-SRC_URI="https://www.andor.com/my/ -> ${ZIP}"
+SRC_URI="https://www.andor.com/my/ -> ${ZIP}
+	https://raw.github.com/omsai/micromanager-overlay/master/sci-libs/libandor/files/${AUTOTOOLS_FILES}"
 
 LICENSE="Andor-EULA"
 SLOT="3"
@@ -40,4 +42,13 @@ src_unpack() {
 	unpack ${TARBALL}
 
 	mv ${WORKDIR}/andor/* ${WORKDIR}/
+
+	# Patch in autotools files
+	#
+	unpack ${AUTOTOOLS_FILES}
+	eautoreconf
+}
+
+src_install() {
+	emake install || die
 }
