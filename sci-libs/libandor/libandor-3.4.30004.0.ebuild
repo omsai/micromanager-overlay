@@ -12,8 +12,9 @@ AUTOTOOLS_FILES="sdk3-autotools.tar.bz2"
 
 DESCRIPTION="SDK library for scientific CMOS cameras"
 HOMEPAGE="http://www.andor.com/software/sdk/"
-SRC_URI="https://www.andor.com/my/ -> ${ZIP}
-	https://raw.github.com/omsai/micromanager-overlay/master/sci-libs/libandor/files/${AUTOTOOLS_FILES}"
+ZIP_URI="https://www.andor.com/my/ -> ${ZIP}"
+AUTOTOOLS_URI="https://github.com/omsai/micromanager-overlay/blob/master/sci-libs/libandor/files/sdk3-autotools.tar.bz2?raw=true -> ${AUTOTOOLS_FILES}"
+SRC_URI="${ZIP_URI} ${AUTOTOOLS_URI}"
 
 LICENSE="Andor-EULA"
 SLOT="3"
@@ -30,7 +31,9 @@ SDKLIB=""
 
 pkg_nofetch() {
 	einfo "Due to license restrictions, download:"
-	einfo "${ZIP}"
+	einfo "${ZIP_URI}"
+	einfo "and"
+	einfo "${AUTOTOOLS_URI}"
 	einfo "and place it in ${DISTDIR}"
 }
 
@@ -47,5 +50,5 @@ src_unpack() {
 }
 
 src_install() {
-	emake install || die
+	emake DESTDIR="${D}" install || die
 }
