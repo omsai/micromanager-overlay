@@ -8,12 +8,12 @@ EAPI=2
 
 ZIP="Andor_SDK3_(Linux)_V${PV}.zip"
 TARBALL="andor-sdk3-${PV}.tgz"
-AUTOTOOLS_FILES="sdk3-autotools.tar.bz2"
+AUTOTOOLS_FILES="sdk3-autotools.tar.gz"
 
 DESCRIPTION="SDK library for scientific CMOS cameras"
 HOMEPAGE="http://www.andor.com/software/sdk/"
 ZIP_URI="https://www.andor.com/my/ -> ${ZIP}"
-AUTOTOOLS_URI="https://github.com/omsai/micromanager-overlay/blob/master/sci-libs/libandor/files/sdk3-autotools.tar.bz2?raw=true -> ${AUTOTOOLS_FILES}"
+AUTOTOOLS_URI="https://github.com/omsai/sdk3-autotools/tarball/master -> ${AUTOTOOLS_FILES}"
 SRC_URI="${ZIP_URI} ${AUTOTOOLS_URI}"
 
 LICENSE="Andor-EULA"
@@ -43,9 +43,11 @@ src_unpack() {
 	unpack ${A}
 	mv ${WORKDIR}/${TARBALL} ${DISTDIR}
 	unpack ${TARBALL}
-	cp -r ${WORKDIR}/andor/* ${WORKDIR}/
+	cp -r andor/* .
 
 	# autotools files patch
+	touch README NEWS AUTHORS
+	cp -r $omsai*/* .
 	eautoreconf
 }
 
