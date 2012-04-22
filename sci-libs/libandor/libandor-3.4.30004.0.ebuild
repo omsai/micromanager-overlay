@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit linux-mod
+inherit linux-mod autotools
 
 EAPI=2
 
@@ -30,7 +30,7 @@ SDKLIB=""
 
 pkg_nofetch() {
 	einfo "Due to license restrictions, download:"
-	einfo "${SRC_URI}"
+	einfo "${ZIP}"
 	einfo "and place it in ${DISTDIR}"
 }
 
@@ -40,12 +40,9 @@ src_unpack() {
 	unpack ${A}
 	mv ${WORKDIR}/${TARBALL} ${DISTDIR}
 	unpack ${TARBALL}
+	cp -r ${WORKDIR}/andor/* ${WORKDIR}/
 
-	mv ${WORKDIR}/andor/* ${WORKDIR}/
-
-	# Patch in autotools files
-	#
-	unpack ${AUTOTOOLS_FILES}
+	# autotools files patch
 	eautoreconf
 }
 
