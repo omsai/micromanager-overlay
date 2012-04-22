@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit linux-mod autotools
+inherit linux-mod autotools multilib
 
 EAPI=2
 
@@ -45,12 +45,23 @@ src_unpack() {
 	unpack ${TARBALL}
 	cp -r andor/* .
 
-	# autotools files patch
+	ebegin "Copying autotools files patch"
 	touch README NEWS AUTHORS
-	cp -r $omsai*/* .
+	cp -r omsai*/* .
 	eautoreconf
+	eend
 }
 
 src_install() {
 	emake DESTDIR="${D}" install || die
+
+	ebegin "Creating symlinks to binary libraries"
+	for lib_name in $( ls ${D}usr/$(get_libdir)/*.${PV} \
+				| xargs -n1 basename ) ; do
+		lib_base=${lib_name%%.*}
+		dosym ${lib_base}.so.${PV} \
+			/usr/$(get_libdir)/${lib_base}.so.3 \
+			|| die "failed to install symlink"
+	done
+	eend
 }
