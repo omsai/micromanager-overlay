@@ -135,11 +135,11 @@ src_install() {
 	# "Initailizing...exiting" or 
 	# SDK error 20096: DRV_LOAD_FIRMWARE_ERROR
 	#
-	dosym ../../../../opt/andor/firmware/ \
+	dosym ../../../..${ANDOR_HOME}/firmware/ \
 	      /usr/local/etc/andor \
 	      || die "dosym firmware to local failed"
 	dosym ../../../../etc/andor/Detector.ini \
-	      /opt/andor/firmware/Detector.ini \
+	      ${ANDOR_HOME}/firmware/Detector.ini \
 	      || die "dosym etc to firmware failed"
 
 	# PCI configuration file (not needed for EEPROM equipped iXons)
