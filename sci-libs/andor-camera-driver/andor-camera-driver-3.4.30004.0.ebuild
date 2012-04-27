@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit linux-mod autotools multilib
+inherit autotools multilib
 
 EAPI=2
 
@@ -26,7 +26,7 @@ RESTRICT="fetch"
 DEPEND=""
 RDEPEND=""
 
-ANDOR_HOME=/opt/andor
+ANDOR_HOME=/opt/andor-3
 SDKLIB=""
 
 pkg_nofetch() {
@@ -53,15 +53,19 @@ src_unpack() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	emake DESTDIR="${D}${ANDOR_HOME}" install || die
 
 	ebegin "Creating symlinks to binary libraries"
-	for lib_name in $( ls ${D}usr/$(get_libdir)/*.${PV} \
+	for lib_name in $( ls ${D}{ANDOR_HOME}usr/${lib_base}/*.${PV} \
 				| xargs -n1 basename ) ; do
 		lib_base=${lib_name%%.*}
 		dosym ${lib_base}.so.${PV} \
-			/usr/$(get_libdir)/${lib_base}.so.3 \
+			${ANDOR_HOME}/usr/$(get_libdir)/${lib_base}.so.3 \
 			|| die "failed to install symlink"
 	done
 	eend
+
+	# Examples
+	insinto ${ANDOR_HOME}
+	doins -r examples || die
 }

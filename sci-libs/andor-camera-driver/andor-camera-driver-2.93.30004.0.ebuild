@@ -23,7 +23,7 @@ RESTRICT="fetch"
 DEPEND=""
 RDEPEND="usb? (	virtual/libusb:0 )"
 
-ANDOR_HOME=/opt/andor
+ANDOR_HOME=/opt/andor-2
 SDKLIB=""
 
 pkg_nofetch() {
@@ -160,6 +160,11 @@ src_install() {
 	#
 	insinto ${ANDOR_HOME}/doc
 	doins INSTALL README ReleaseNotes doc/*.pdf || die "dodoc failed"
+
+	# Examples
+	#
+	insinto ${ANDOR_HOME}/doc/
+	doins -r examples || die "doins examples failed"
 }
 
 pkg_postinst() {
