@@ -27,7 +27,11 @@ DEPEND=""
 RDEPEND=""
 
 ANDOR_HOME=/opt/andor-3
-SDKLIB=""
+PREFIX=${ANDOR_HOME}
+EPREFIX=${PREFIX}
+LIBDIR=${PREFIX}/$(get_libdir)
+SYSCONFDIR=${PREFIX}/etc
+DOCDIR=${PREFIX}/doc
 
 pkg_nofetch() {
 	einfo "Due to license restrictions, download:"
@@ -52,20 +56,39 @@ src_unpack() {
 	eend
 }
 
-src_install() {
-	emake DESTDIR="${D}${ANDOR_HOME}" install || die
+src_configure() {
+	econf 	--prefix ${PREFIX} \
+		--libdir ${LIBDIR} \
+		--sysconfdir ${SYSCONFDIR} \
+		--docdir ${DOCDIR}
+}
 
-	ebegin "Creating symlinks to binary libraries"
-	for lib_name in $( ls ${D}{ANDOR_HOME}usr/${lib_base}/*.${PV} \
+src_install() {
+	emake DESTDIR="${D}" install || die
+
+	# Symlinks
+	#
+	IMAGE_LIBDIR=${D}${LIBDIR}
+	pushd ${IMAGE_LIBDIR} || die
+	for lib_name in $( ls *.${PV} \
 				| xargs -n1 basename ) ; do
 		lib_base=${lib_name%%.*}
-		dosym ${lib_base}.so.${PV} \
-			${ANDOR_HOME}/usr/$(get_libdir)/${lib_base}.so.3 \
-			|| die "failed to install symlink"
+		SRC=${lib_base}.so.${PV}
+		LINK_NAME=${lib_base}.so.3
+		dosym ${SRC} ${LIBDIR}/${LINK_NAME} \
+			|| die
 	done
-	eend
+	popd
+
+	LINK_PATH=/usr/$(get_libdir)/udev/rules.d
+	dodir ${LINK_PATH}
+	dosym ../../..${LIBDIR}/udev/rules.d/andor.rules \
+		 ${LINK_PATH}/andor.rules
+
+	dosym ..${SYSCONFDIR}/andor_sdk.conf /etc/andor_sdk.conf
 
 	# Examples
+	#
 	insinto ${ANDOR_HOME}
 	doins -r examples || die
 }
