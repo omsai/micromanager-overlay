@@ -5,21 +5,20 @@ EAPI=4
 
 inherit git-2 java-utils-2
 
-DESCRIPTION="Lightweight IDE for Clojure"
-HOMEPAGE="https://github.com/arthuredelstein/clooj"
+DESCRIPTION="A small library for getting var information from clojure source code"
+HOMEPAGE="https://github.com/arthuredelstein/clj-inspector"
 
 SLOT="0"
 LICENSE="EPL-1.0"
 KEYWORDS="~amd64"
 IUSE=""
 
-EGIT_REPO_URI="https://github.com/arthuredelstein/clooj.git"
+EGIT_REPO_URI="https://github.com/arthuredelstein/clj-inspector.git"
 
 DEPEND=">=virtual/jdk-1.6"
 
 RDEPEND=">=dev-lang/clojure-1.3.0
 	dev-java/commons-math"
-#	dev-java/gaussian"
 
 src_unpack() {
 	git-2_src_unpack
@@ -30,8 +29,8 @@ src_unpack() {
 
 src_compile() {
         java \
-		-cp ./src:./classes:$(java-pkg_getjars clojure-1.3,commons-math-2)
+		-cp ./src:./classes:$(java-pkg_getjars clojure-1.3,commons-math-2) \
 		-Djava.awt.headless=true \
 		-Dclojure.compile.path=classes \
-		clojure.lang.Compile lwm.core || die "Compile failed"
+		clojure.lang.Compile clj-inspector.vars || die "Compile failed"
 }
