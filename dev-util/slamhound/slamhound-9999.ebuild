@@ -15,8 +15,7 @@ EGIT_REPO_URI="https://github.com/technomancy/slamhound.git"
 
 DEPEND=">=virtual/jdk-1.6"
 
-RDEPEND="=dev-lang/clojure-1.3.0
-	dev-lang/leiningen"
+RDEPEND="=dev-lang/clojure-1.3.0'
 
 src_unpack() {
 	git-2_src_unpack
