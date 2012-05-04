@@ -15,7 +15,7 @@ IUSE="source"
 
 SRC_URI="https://github.com/clojure/data.json/tarball/data.json-0.1.2
          -> data.json-${PV}.tar.gz"
-S="${WORKDIR}/clojure-data.json-5a17048"
+S="${WORKDIR}"
 
 CDEPEND="dev-lang/clojure:1.3"
 DEPEND=">=virtual/jdk-1.5
@@ -26,7 +26,7 @@ RDEPEND=">=virtual/jre-1.5
 JAVA_MAVEN_BUILD_SYSTEM="maven"
 JAVA_MAVEN_CLASSPATH="clojure-1.3"
 
-
 src_unpack() {
 	java-maven-2_src_unpack
+	mv clojure-data.json-5a17048/* .
 }
