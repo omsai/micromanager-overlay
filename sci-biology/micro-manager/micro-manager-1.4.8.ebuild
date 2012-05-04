@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 	
-EAPI=2
+EAPI=4
 
 inherit eutils subversion autotools java-pkg-opt-2 flag-o-matic java-utils-2
 
@@ -35,7 +35,8 @@ DEPEND="dev-lang/swig
 		dev-java/jfreechart:1.0
 		dev-lang/clojure:1.3
 		dev-lang/clojure-contrib:1.1
-		sci-libs/TSFproto
+ 		dev-java/data-json
+		sci-libs/TSFProto
 	)"
 
 src_unpack() {
@@ -49,7 +50,7 @@ src_prepare() {
 	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
 	epatch ${FILESDIR}/prevent_imagej_collisions.patch
 
-	# TODO Make ebuilds for clooj, data.json, lwm, TSFProto
+	# TODO Make ebuilds for clooj, lwm
 	#      Removing plugins requiring these deps untill ebuilds made
 	epatch ${FILESDIR}/remove_plugins_with_unresolved_deps.patch
 
@@ -85,9 +86,10 @@ src_configure() {
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
 		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
 		java-pkg_jar-from protobuf protobuf.jar gproto.jar
-		java-pkg_jar-from TSFproto
+		java-pkg_jar-from TSFProto
+		java-pkg_jar-from data-json data.json-0.1.2.jar data.json.jar
 		# TODO: Make these dep ebuilds and symlinks for plugins:
-		# clooj, data.json, lwm
+		# clooj, lwm
 		popd
 		eend
 	else
