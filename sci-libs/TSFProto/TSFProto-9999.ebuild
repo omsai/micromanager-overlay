@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI=2
+EAPI=4
 
 inherit java-pkg-2 subversion
 
@@ -25,7 +25,7 @@ src_unpack() {
 }
 
 src_prepare() {
-	mkdir buildj buildc dist
+	mkdir buildj buildc dist || die
 	protoc --java_out=buildj --cpp_out=buildc ${PN}.proto || die
 }
 
@@ -33,12 +33,12 @@ src_compile() {
 	ejavac \
 		-sourcepath buildj \
 		-classpath $(java-pkg_getjar protobuf protobuf.jar) \
-		buildj/edu/ucsf/tsf/TaggedSpotsProtos.java || die
+		buildj/edu/ucsf/tsf/TaggedSpotsProtos.java
 	jar cf dist/${PN}.jar -C buildj . || die
 
 	$(tc-getCC) \
 		${CXXFLAGS} \
-		-c buildc/${PN}.pb.cc -o buildc/lib${PN}.o || die
+		-c buildc/${PN}.pb.cc -o buildc/lib${PN}.o
 }
 
 src_install() {

@@ -2,6 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
+EAPI=4
+
 inherit java-pkg-2 java-ant-2 eutils versionator
 
 MY_PN="ij"

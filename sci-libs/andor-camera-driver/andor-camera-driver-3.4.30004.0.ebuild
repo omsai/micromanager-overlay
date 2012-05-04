@@ -4,7 +4,7 @@
 
 inherit autotools multilib
 
-EAPI=2
+EAPI=4
 
 ZIP="Andor_SDK3_(Linux)_V${PV}.zip"
 TARBALL="andor-sdk3-${PV}.tgz"
@@ -64,7 +64,7 @@ src_configure() {
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	emake DESTDIR="${D}" install
 
 	# Symlinks
 	#
@@ -75,8 +75,7 @@ src_install() {
 		lib_base=${lib_name%%.*}
 		SRC=${lib_base}.so.${PV}
 		LINK_NAME=${lib_base}.so.3
-		dosym ${SRC} ${LIBDIR}/${LINK_NAME} \
-			|| die
+		dosym ${SRC} ${LIBDIR}/${LINK_NAME}
 	done
 	popd
 
@@ -90,5 +89,5 @@ src_install() {
 	# Examples
 	#
 	insinto ${ANDOR_HOME}
-	doins -r examples || die
+	doins -r examples
 }

@@ -1,6 +1,8 @@
 # Copyright 2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
+EAPI=4
+
 inherit git-2 java-utils-2
 
 DESCRIPTION="Local Weighted Mean"

@@ -4,7 +4,7 @@
 
 inherit linux-mod
 
-EAPI=2
+EAPI=4
 
 ZIP="Andor_SDK2_(Linux)_V${PV}.zip"
 TARBALL="andor-${PV}.tar.gz"
@@ -84,8 +84,7 @@ src_compile() {
 
 		set_arch_to_kernel
 
-		emake LINUXDIR="${KERNEL_DIR}" \
-			|| die "Kernel module compile failed"
+		emake LINUXDIR="${KERNEL_DIR}"
 	fi
 }
 
@@ -103,32 +102,30 @@ src_install() {
 		# Startup script
 		#
 		dosbin script/andordrvlx_load \
-			 || die "dosbin load module failed"
 		echo "install andordrvlx /usr/sbin/andordrvlx_load DMA_MODE=1" \
 			 >> ${T}/andor.conf
 		insinto /etc/modprobe.d
-		doins ${T}/andor.conf || die "doins andor.conf failed"
+		doins ${T}/andor.conf
 	fi
 
 	# SDK header
 	#
 	insinto /usr/include
-	doins include/* || die "doins SDK header failed"
+	doins include/*
 
 	# SDK library
 	#
 	insinto ${ANDOR_HOME}
-	doins lib/${SDKLIB} || die "Could not find SDK lib ${SDKLIB}"
+	doins lib/${SDKLIB}
 	insinto /usr/lib 
-	dosym ../../${ANDOR_HOME}/${SDKLIB} /usr/lib/libandor.so \
-              || die "dosym libandor.so failed"
+	dosym ../../${ANDOR_HOME}/${SDKLIB} /usr/lib/libandor.so
 	echo "LDPATH=${ANDOR_HOME}" > 10andor
-	doenvd 10andor || die "doenvd failed"
+	doenvd 10andor
 
 	# firmware files
 	#
 	insinto ${ANDOR_HOME}/firmware
-	doins etc/* || die "doins firmware files failed"
+	doins etc/*
 
 	# The SDK hard-links to /usr/local/etc/andor
 	# Without this symlink you will see example programs output
@@ -136,35 +133,31 @@ src_install() {
 	# SDK error 20096: DRV_LOAD_FIRMWARE_ERROR
 	#
 	dosym ../../../..${ANDOR_HOME}/firmware/ \
-	      /usr/local/etc/andor \
-	      || die "dosym firmware to local failed"
+	      /usr/local/etc/andor
 	dosym ../../../../etc/andor/Detector.ini \
-	      ${ANDOR_HOME}/firmware/Detector.ini \
-	      || die "dosym etc to firmware failed"
+	      ${ANDOR_HOME}/firmware/Detector.ini
 
 	# PCI configuration file (not needed for EEPROM equipped iXons)
 	#
 	insinto /etc/andor
-	newins etc/DetectorTemplate.ini Detector.ini \
-              || die "newins PCI configuration file failed"
+	newins etc/DetectorTemplate.ini Detector.ini
 
 	# USB udev rule
 	#
 	if use usb; then
 		insinto /lib/udev/rules.d
-		newins script/andor.rules andor-usb.rules \
-			|| die "newins usb udev rule failed"
+		newins script/andor.rules andor-usb.rules
 	fi
 
 	# Documentation
 	#
 	insinto ${ANDOR_HOME}/doc
-	doins INSTALL README ReleaseNotes doc/*.pdf || die "dodoc failed"
+	doins INSTALL README ReleaseNotes doc/*.pdf
 
 	# Examples
 	#
 	insinto ${ANDOR_HOME}/doc/
-	doins -r examples || die "doins examples failed"
+	doins -r examples
 }
 
 pkg_postinst() {
