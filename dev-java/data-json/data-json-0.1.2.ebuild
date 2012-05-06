@@ -3,9 +3,7 @@
 
 EAPI=4
 
-CLOJURE_VERSION="1.1"
-WANT_CONTRIB="no"
-inherit clojure
+inherit java-pkg-2 java-ant-2
 
 DESCRIPTION="JSON in Clojure"
 HOMEPAGE="https://github.com/clojure/data.json"
@@ -19,10 +17,12 @@ SRC_URI="https://github.com/clojure/data.json/tarball/data.json-0.1.2
          -> data.json-${PV}.tar.gz"
 S=${WORKDIR}/clojure-data.json-5a17048
 
-DEPEND=""
-RDEPEND=""
+RDEPEND=">=virtual/jre-1.5"
+DEPEND=">=virtual/jdk-1.5"
 
 src_prepare() {
+	addwrite ${ROOT}/root/.m2/
+
 	mvn ant:ant
 }
 
