@@ -59,12 +59,12 @@ src_prepare() {
 		# multiple plugins from being built simultaneously
 		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
 
-		eautoconf || die "eautoconf for patched Makefile.am failed"
+		eautoconf
 		# FIXME	eautoreconf should replace eautoconf and 
 		#	subversion_bootstrap lines, but dies because 
 		#	./Makefile.am searches for the non-existent
 		#	SecretDeviceAdapters directory
-		#eautoreconf || die "eautoreconf for patched Makefile.am failed"
+		#eautoreconf
 	fi
 }
 
@@ -96,15 +96,15 @@ src_configure() {
 		IMAGEJ_DIR='no'
 	fi
 
-	econf --with-imagej=${IMAGEJ_DIR} || die
+	econf --with-imagej=${IMAGEJ_DIR}
 }
 
 src_compile() {
-	emake || die
+	emake
 }
 
 src_install() {
-	emake DESTDIR="${D}" install || die
+	emake DESTDIR="${D}" install
 
 	if use java; then
 		# FIXME	java-pkg_dolauncher should replace this bash script.

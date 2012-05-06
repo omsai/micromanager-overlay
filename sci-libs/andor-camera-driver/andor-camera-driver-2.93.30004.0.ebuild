@@ -94,9 +94,9 @@ src_install() {
 	if use modules; then
 		insinto /lib/modules/${KV_FULL}/${PN}
 		if kernel_is ge 2 6; then
-			doins src/driver/*.ko || die "doins kernel module failed"
+			doins src/driver/*.ko
 		else
-			doins src/driver/*.o || die "doins kernel module failed"
+			doins src/driver/*.o
 		fi
 
 		# Startup script
