@@ -18,7 +18,8 @@ EGIT_REPO_URI="https://github.com/arthuredelstein/clj-inspector.git"
 DEPEND=">=virtual/jdk-1.6"
 
 RDEPEND=">=dev-lang/clojure-1.3.0
-	dev-java/commons-math"
+	dev-java/commons-math
+	dev-java/data-zip"
 
 src_unpack() {
 	git-2_src_unpack
@@ -29,7 +30,7 @@ src_unpack() {
 
 src_compile() {
         java \
-		-cp ./src:./classes:$(java-pkg_getjars clojure-1.3,commons-math-2) \
+		-cp ./src:./classes:$(java-pkg_getjars clojure-1.3,commons-math-2,data-zip) \
 		-Djava.awt.headless=true \
 		-Dclojure.compile.path=classes \
 		clojure.lang.Compile clj-inspector.vars || die "Compile failed"
