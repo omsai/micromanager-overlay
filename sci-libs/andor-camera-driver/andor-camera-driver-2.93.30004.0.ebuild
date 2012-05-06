@@ -119,8 +119,9 @@ src_install() {
 	doins lib/${SDKLIB}
 	insinto /usr/lib 
 	dosym ../../${ANDOR_HOME}/${SDKLIB} /usr/lib/libandor.so
-	echo "LDPATH=${ANDOR_HOME}" > 10andor
-	doenvd 10andor
+	local envd=10$(basename ${ANDOR_HOME})
+	echo "LDPATH=${ANDOR_HOME}" > ${envd}
+	doenvd ${envd}
 
 	# firmware files
 	#

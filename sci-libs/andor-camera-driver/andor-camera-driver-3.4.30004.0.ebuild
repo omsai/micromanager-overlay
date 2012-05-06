@@ -79,10 +79,18 @@ src_install() {
 	done
 	popd
 
-	LINK_PATH=/usr/$(get_libdir)/udev/rules.d
-	dodir ${LINK_PATH}
+	# env.d
+	#
+        local envd=10$(basename ${ANDOR_HOME})
+        echo "LDPATH=${ANDOR_HOME}" > ${envd}
+        doenvd ${envd}
+
+	# udev
+	#
+	local rules_path=/usr/$(get_libdir)/udev/rules.d
+	dodir ${rules_path}
 	dosym ../../..${LIBDIR}/udev/rules.d/andor.rules \
-		 ${LINK_PATH}/andor.rules
+		 ${rules_path}/andor.rules
 
 	dosym ..${SYSCONFDIR}/andor_sdk.conf /etc/andor_sdk.conf
 
