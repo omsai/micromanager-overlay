@@ -30,11 +30,8 @@ KEYWORDS="~x86 ~ppc ~amd64"
 
 IUSE="doc plugins debug"
 
-RDEPEND=">=virtual/jre-1.6
-	dev-java/java-config"
-DEPEND=">=virtual/jdk-1.6
-	dev-java/ant-core
-	${RDEPEND}"
+RDEPEND=">=virtual/jre-1.6"
+DEPEND=">=virtual/jdk-1.6"
 
 S=${WORKDIR}/source
 IJ_S=${WORKDIR}/ImageJ
@@ -54,34 +51,35 @@ src_compile() {
 
 	ant ${antflags} || die  "ant build failed"
 
+	# FIXME java-pkg_dolauncher should replace this bash script
 	# build finished, generate startup wrapper
-	cat <<EOF > ${T}/${PN}
-#!/bin/bash
-IJ_LIB=/usr/share/${PN}/lib
-if !([ "\${IJ_HOME}" ]) ; then
-	IJ_HOME=\${HOME}
-fi
-if [ -d \${IJ_HOME}/plugins ] ; then
-	IJ_PLG=\${IJ_HOME}
-else
-	IJ_PLG=/usr/share/${PN}/lib
-fi
-if !([ "\$IJ_MEM" ]) ; then
-	IJ_MEM=128
-fi
-if !([ "\$IJ_CP" ]) ; then
-	IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar
-else
-	IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar:\${IJ_CP}
-fi
-\$(java-config --java) \\
-	-Xmx\${IJ_MEM}m -Dswing.aatext=true \\
-	-Dawt.useSystemAAFontSettings=on\\
-	-cp \${IJ_CP} \\
-	-Duser.home=\${IJ_HOME} \\
-	-Dplugins.dir=\${IJ_PLG} \\
-	ij.ImageJ "\$@"
-EOF
+	cat <<-EOF > ${T}/${PN}
+	#!/bin/bash
+	IJ_LIB=/usr/share/${PN}/lib
+	if !([ "\${IJ_HOME}" ]) ; then
+		IJ_HOME=\${HOME}
+	fi
+	if [ -d \${IJ_HOME}/plugins ] ; then
+		IJ_PLG=\${IJ_HOME}
+	else
+		IJ_PLG=/usr/share/${PN}/lib
+	fi
+	if !([ "\$IJ_MEM" ]) ; then
+		IJ_MEM=128
+	fi
+	if !([ "\$IJ_CP" ]) ; then
+		IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar
+	else
+		IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar:\${IJ_CP}
+	fi
+	\$(java-config --java) \\
+		-Xmx\${IJ_MEM}m -Dswing.aatext=true \\
+		-Dawt.useSystemAAFontSettings=on\\
+		-cp \${IJ_CP} \\
+		-Duser.home=\${IJ_HOME} \\
+		-Dplugins.dir=\${IJ_PLG} \\
+		ij.ImageJ "\$@"
+	EOF
 }
 
 src_install() {
