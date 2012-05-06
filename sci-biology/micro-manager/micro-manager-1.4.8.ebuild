@@ -35,7 +35,7 @@ DEPEND="dev-lang/swig
 		dev-java/jfreechart:1.0
 		dev-lang/clojure:1.3
 		dev-lang/clojure-contrib:1.1
- 		dev-java/data-json
+		dev-util/clooj
 		sci-libs/TSFProto
 	)"
 
@@ -50,7 +50,7 @@ src_prepare() {
 	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
 	epatch ${FILESDIR}/prevent_imagej_collisions.patch
 
-	# TODO Make ebuilds for clooj, lwm
+	# TODO Make ebuilds for lwm, gaussian
 	#      Removing plugins requiring these deps untill ebuilds made
 	epatch ${FILESDIR}/remove_plugins_with_unresolved_deps.patch
 
@@ -87,9 +87,9 @@ src_configure() {
 		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
 		java-pkg_jar-from protobuf protobuf.jar gproto.jar
 		java-pkg_jar-from TSFProto
-		java-pkg_jar-from data-json data.json-0.1.2.jar data.json.jar
+		java-pkg_jar-from clooj clooj-0.3.4-standalone.jar clooj.jar
 		# TODO: Make these dep ebuilds and symlinks for plugins:
-		# clooj, lwm
+		# lwm, gaussian
 		popd
 		eend
 	else
