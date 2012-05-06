@@ -94,8 +94,7 @@ src_install() {
 
 	use doc && java-pkg_dohtml -r ${WORKDIR}/api
 
-	insinto /usr/share/pixmaps
-	doins ${WORKDIR}/${PN}.png
+	doicon ${WORKDIR}/${PN}.png
 	make_desktop_entry "imagej %F" "ImageJ" ${PN}.png Graphics
 }
 
