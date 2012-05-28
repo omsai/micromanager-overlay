@@ -2,9 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit linux-mod
-
 EAPI=4
+inherit linux-mod
 
 ZIP="Andor_SDK2_(Linux)_V${PV}.tar.gz"
 TARBALL="andor-${PV}.tar.gz"
