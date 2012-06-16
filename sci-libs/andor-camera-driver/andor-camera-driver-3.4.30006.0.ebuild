@@ -2,9 +2,8 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit autotools multilib
-
 EAPI=4
+inherit autotools multilib
 
 ZIP="Andor_SDK3_(Linux)_V${PV}.zip"
 TARBALL="andor-sdk3-${PV}.tgz"
