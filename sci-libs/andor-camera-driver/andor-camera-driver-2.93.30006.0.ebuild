@@ -75,6 +75,9 @@ src_unpack() {
 			mv Makefile2.6 Makefile
 		fi
 	fi
+
+	# fix issue 2: deprecated SYSFS{}= keyname
+	sed -i -e 's/SYSFS/ATTRS/g' andor/script/andor.rules
 }
 
 src_compile() {
