@@ -3,7 +3,7 @@
 # $Header: $
 
 EAPI=4
-inherit linux-mod
+inherit linux-mod multilib
 
 ZIP="Andor_SDK2_(Linux)_V${PV}.tar.gz"
 TARBALL="andor-${PV}.tar.gz"
@@ -117,13 +117,11 @@ src_install() {
 
 	# SDK library
 	#
-	insinto ${ANDOR_HOME}
-	doins lib/${SDKLIB}
-	insinto /usr/lib
-	dosym ../../${ANDOR_HOME}/${SDKLIB} /usr/lib/libandor.so
 	local envd=10$(basename ${ANDOR_HOME})
 	echo "LDPATH=${ANDOR_HOME}" > ${envd}
 	doenvd ${envd}
+	( into ${ANDOR_HOME}; dolib.so lib/${SDKLIB} )
+	dosym ../../${ANDOR_HOME}/$(get_libdir)/${SDKLIB} /usr/$(get_libdir)/libandor.so.2
 
 	# firmware files
 	#
@@ -135,9 +133,9 @@ src_install() {
 	# "Initailizing...exiting" or
 	# SDK error 20096: DRV_LOAD_FIRMWARE_ERROR
 	#
-	dosym ../../../..${ANDOR_HOME}/firmware/ \
+	dosym ../../..${ANDOR_HOME}/firmware/ \
 		  /usr/local/etc/andor
-	dosym ../../../../etc/andor/Detector.ini \
+	dosym ../../../etc/andor/Detector.ini \
 		  ${ANDOR_HOME}/firmware/Detector.ini
 
 	# PCI configuration file (not needed for EEPROM equipped iXons)
