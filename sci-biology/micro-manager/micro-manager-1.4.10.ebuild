@@ -126,6 +126,7 @@ src_install() {
 		cat <<-EOF > "${T}"/${PN}
 		#!/bin/bash
 		
+		(
 		# MM plugins won't load without changing to this path
 		cd /usr/share/imagej/lib
 
@@ -133,6 +134,9 @@ src_install() {
 		   -mx1024m \\
 		   -cp \$(java-config -p imagej,libreadline-java) \\
 		   ij.ImageJ -run "Micro-Manager Studio"
+		) 2>&1 | tee >(logger -t micro-manager) -
+		
+		exit 0
 		EOF
 
 		make_desktop_entry "${PN}" "Micro-Manager Studio" imagej \
