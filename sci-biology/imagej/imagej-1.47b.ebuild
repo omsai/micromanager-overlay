@@ -24,7 +24,7 @@ SRC_URI="http://rsb.info.nih.gov/ij/download/src/${MY_PN}${MY_PV}-src.zip
 
 RESTRICT="nomirror"
 LICENSE="public-domain"
-SLOT="0"
+SLOT="1"
 
 KEYWORDS="~x86 ~ppc ~amd64"
 
