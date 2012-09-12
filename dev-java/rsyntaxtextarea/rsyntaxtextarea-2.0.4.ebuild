@@ -15,11 +15,21 @@ SLOT="0"
 KEYWORDS="~amd64"
 IUSE=""
 
-DEPEND=">=virtual/jdk-1.4"
-RDEPEND=">=virtual/jre-1.4"
+DEPEND=">=virtual/jdk-1.5"
+RDEPEND=">=virtual/jre-1.5"
 
 S=${WORKDIR}
 
+src_prepare() {
+	# Make compatible for > 1.4 VMs
+	sed -i -e "s/throws SAXException /throws SAXException, IOException /g" \
+		src/org/fife/ui/${PN}/parser/XmlParser.java
+}
+
 src_compile() {
-	ANT_TASKS="compile,make-jar,make-javadoc" eant
+	ANT_TASKS="make-jar,make-javadoc" eant
+}
+
+src_install() {
+	java-pkg_dojar dist/${PN}.jar
 }
