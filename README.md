@@ -2,7 +2,7 @@
 
 1.  Add this overlay using `app-portage/layman`
 ```
-layman -o https://raw.github.com/omsai/micromanager-overlay/master/overlay.xml -f -a micro-manager
+layman -o https://raw.github.com/omsai/micromanager-overlay/master/overlay.xml -f -a micromanager
 ```
 
 2.  Update overlay
