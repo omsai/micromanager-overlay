@@ -22,7 +22,14 @@ RDEPEND=">=virtual/jre-1.5
 ${COMMON_DEP}"
 
 S=${WORKDIR}
+EANT_BUILD_TARGET="make-jar"
+EANT_DOC_TARGET="make-javadoc"
+EANT_GENTOO_CLASSPATH="rsyntaxtextarea"
 
-src_compile() {
-	ANT_TASKS="make-jar" eant
+src_prepare() {
+	java-ant_rewrite-classpath build.xml
+}
+
+src_install() {
+	java-pkg_dojar dist/${PN}.jar
 }

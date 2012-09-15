@@ -19,15 +19,13 @@ DEPEND=">=virtual/jdk-1.5"
 RDEPEND=">=virtual/jre-1.5"
 
 S=${WORKDIR}
+EANT_BUILD_TARGET="make-jar"
+EANT_DOC_TARGET="make-javadoc"
 
 src_prepare() {
 	# Make compatible for > 1.4 VMs
 	sed -i -e "s/throws SAXException /throws SAXException, IOException /g" \
 		src/org/fife/ui/${PN}/parser/XmlParser.java
-}
-
-src_compile() {
-	ANT_TASKS="make-jar,make-javadoc" eant
 }
 
 src_install() {
