@@ -4,6 +4,7 @@
 
 EAPI=4
 
+JAVA_PKG_IUSE="doc"
 inherit java-pkg-2 java-ant-2 subversion
 
 DESCRIPTION="AutoComplete is a library allowing you to add IDE-like auto-completion to any Swing JTextComponent"
@@ -25,6 +26,7 @@ S=${WORKDIR}
 EANT_BUILD_TARGET="make-jar"
 EANT_DOC_TARGET="make-javadoc"
 EANT_GENTOO_CLASSPATH="rsyntaxtextarea"
+JAVA_ANT_CLASSPATH_TAGS="${JAVA_ANT_CLASSPATH_TAGS} javadoc"
 
 src_prepare() {
 	java-ant_rewrite-classpath build.xml
@@ -32,4 +34,6 @@ src_prepare() {
 
 src_install() {
 	java-pkg_dojar dist/${PN}.jar
+
+	use doc && java-pkg_dojavadoc javadoc
 }
