@@ -1,7 +1,7 @@
 # Copyright 1999-2012 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
-	
+
 EAPI=4
 
 inherit eutils subversion autotools java-pkg-opt-2 flag-o-matic java-utils-2
@@ -15,7 +15,7 @@ ESVN_REVISION=9309
 SLOT="0"
 LICENSE="BSD"
 KEYWORDS="~amd64"
-IUSE="+java ieee1394"
+IUSE="+java clojure ieee1394"
 
 RDEPEND="java? (
 		>=virtual/jre-1.5
@@ -24,8 +24,8 @@ RDEPEND="java? (
 
 DEPEND="dev-lang/swig
 	dev-libs/boost
-	java? ( 
-		>=virtual/jdk-1.5 
+	java? (
+		>=virtual/jdk-1.5
 		>=sci-biology/imagej-1.46e[plugins]
 		dev-java/bsh
 		dev-java/commons-math:2
@@ -33,9 +33,7 @@ DEPEND="dev-lang/swig
 		dev-java/swing-layout:1
 		dev-java/absolutelayout
 		dev-java/jfreechart:1.0
-		dev-lang/clojure:1.3
-		dev-lang/clojure-contrib:1.1
-		dev-util/clooj
+		clojure? ( dev-util/clooj )
 		sci-libs/TSFProto
 	)"
 
@@ -52,12 +50,22 @@ src_prepare() {
 	subversion_bootstrap
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
-	epatch ${FILESDIR}/prevent_imagej_plugins_removal.patch
-	epatch ${FILESDIR}/prevent_imagej_collisions.patch
+	epatch ${FILESDIR}/boost_ipc_detail.patch
+
+	# prevent imagej removal
+	sed -i -e '/rm -rf/d' scripts/Makefile.am
+	# prevent imagej collision
+	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
 
 	# TODO Make ebuilds for lwm, gaussian
-	#      Removing plugins requiring these deps untill ebuilds made
-	epatch ${FILESDIR}/remove_plugins_with_unresolved_deps.patch
+	#      Removing plugins requiring these deps until ebuilds made
+	REMOVE_MM_PLUGINS="DataBrowser Gaussian"
+	! use clojure && REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
+	for PLUGIN in REMOVE_MM_PLUGINS; do
+		sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
+			-e "/^\tcp $PLUGIN\.jar/d" \
+			plugins/Makefile.am
+	done
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
@@ -65,8 +73,8 @@ src_prepare() {
 		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
 
 		eautoconf
-		# FIXME	eautoreconf should replace eautoconf and 
-		#	subversion_bootstrap lines, but dies because 
+		# FIXME	eautoreconf should replace eautoconf and
+		#	subversion_bootstrap lines, but dies because
 		#	./Makefile.am searches for the non-existent
 		#	SecretDeviceAdapters directory
 		#eautoreconf
@@ -89,10 +97,14 @@ src_configure() {
 		java-pkg_jar-from absolutelayout absolutelayout.jar AbsoluteLayout.jar
 		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
-		java-pkg_jar-from imagej,clojure-1.3,clojure-contrib-1.1
+		java-pkg_jar-from imagej
+		if use clojure; then
+			java-pkg_jar-from clojure-1.3,clojure-contrib-1.1
+			java-pkg_jar-from clooj clooj-0.3.4-standalone.jar clooj.jar
+		fi
 		java-pkg_jar-from protobuf protobuf.jar gproto.jar
 		java-pkg_jar-from TSFProto
-		java-pkg_jar-from clooj clooj-0.3.4-standalone.jar clooj.jar
+
 		# TODO: Make these dep ebuilds and symlinks for plugins:
 		# lwm, gaussian
 		popd
@@ -125,7 +137,7 @@ src_install() {
 		#	   asking to select a dataset to open on startup.
 		cat <<-EOF > "${T}"/${PN}
 		#!/bin/bash
-		
+
 		(
 		# MM plugins won't load without changing to this path
 		cd /usr/share/imagej/lib
@@ -135,7 +147,7 @@ src_install() {
 		   -cp \$(java-config -p imagej,libreadline-java) \\
 		   ij.ImageJ -run "Micro-Manager Studio"
 		) 2>&1 | tee >(logger -t micro-manager) -
-		
+
 		exit 0
 		EOF
 
