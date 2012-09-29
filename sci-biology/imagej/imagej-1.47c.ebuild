@@ -37,12 +37,17 @@ S=${WORKDIR}/source
 IJ_S=${WORKDIR}/ImageJ
 
 src_unpack() {
-	cp ${DISTDIR}/ImageJ.png ${WORKDIR}/${PN}-${SLOT}.png
+	cp ${DISTDIR}/ImageJ.png ${WORKDIR}/${PN}.png
 	unpack ${A}
 
 	if ! use debug ; then
 		sed -i 's: debug="on">: debug="off">:' ${S}/build.xml
 	fi
+}
+
+src_prepare() {
+	# for icedtea
+	epatch ${FILESDIR}/fix_non-ascii_char.patch
 }
 
 src_compile() {
@@ -53,24 +58,24 @@ src_compile() {
 
 	# FIXME java-pkg_dolauncher should replace this bash script
 	# startup wrapper
-	cat <<-EOF > ${T}/${PN}-${SLOT}
+	cat <<-EOF > ${T}/${PN}
 	#!/bin/bash
-	IJ_LIB=/usr/share/${PN}-${SLOT}/lib
+	IJ_LIB=/usr/share/${PN}/lib
 	if !([ "\${IJ_HOME}" ]) ; then
 		IJ_HOME=\${HOME}
 	fi
 	if [ -d \${IJ_HOME}/plugins ] ; then
 		IJ_PLG=\${IJ_HOME}
 	else
-		IJ_PLG=/usr/share/${PN}-${SLOT}/lib
+		IJ_PLG=/usr/share/${PN}/lib
 	fi
 	if !([ "\$IJ_MEM" ]) ; then
 		IJ_MEM=128
 	fi
 	if !([ "\$IJ_CP" ]) ; then
-		IJ_CP=\$(java-config -p imagej-${SLOT}):\$(java-config -O)/lib/tools.jar
+		IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar
 	else
-		IJ_CP=\$(java-config -p imagej-${SLOT}):\$(java-config -O)/lib/tools.jar:\${IJ_CP}
+		IJ_CP=\$(java-config -p imagej):\$(java-config -O)/lib/tools.jar:\${IJ_CP}
 	fi
 	\$(java-config --java) \\
 		-Xmx\${IJ_MEM}m -Dswing.aatext=true \\
@@ -85,17 +90,17 @@ src_compile() {
 src_install() {
 	java-pkg_dojar *.jar
 
-	dobin ${T}/${PN}-${SLOT}
+	dobin ${T}/${PN}
 
 	if use plugins ; then
-		cp -R ${IJ_S}/plugins ${D}/usr/share/${PN}-${SLOT}/lib/
-		cp -R ${IJ_S}/macros ${D}/usr/share/${PN}-${SLOT}/lib/
+		cp -R ${IJ_S}/plugins ${D}/usr/share/${PN}/lib/
+		cp -R ${IJ_S}/macros ${D}/usr/share/${PN}/lib/
 	fi
 
 	use doc && java-pkg_dohtml -r ${WORKDIR}/api
 
-	doicon ${WORKDIR}/${PN}-${SLOT}.png
-	make_desktop_entry "${PN}-${SLOT}" "ImageJ" ${PN}-${SLOT} Graphics
+	doicon ${WORKDIR}/${PN}.png
+	make_desktop_entry "${PN}" "ImageJ" ${PN} Graphics
 }
 
 pkg_postinst() {
