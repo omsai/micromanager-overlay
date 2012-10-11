@@ -5,7 +5,7 @@
 EAPI=4
 inherit linux-mod multilib
 
-ZIP="Andor_SDK2_(Linux)_V${PV}.tar.gz"
+ZIP="Andor_SDK_(Linux)_V${PV}.tar.gz"
 TARBALL="andor-${PV}.tar.gz"
 
 DESCRIPTION="SDK library for scientific digital CCD, ICCD, EMCCD cameras"
@@ -14,7 +14,7 @@ SRC_URI="https://www.andor.com/my/ -> ${ZIP}"
 
 LICENSE="Andor-EULA"
 SLOT="2"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~x86"
 IUSE="+modules +usb"
 
 RESTRICT="fetch"
@@ -62,22 +62,24 @@ src_unpack() {
 	# Upstream double bags tarball in a zip file
 	#
 	unpack ${A}
-	mv ${WORKDIR}/V${PV}/${TARBALL} ${DISTDIR}
+	mv ${WORKDIR}/${TARBALL} ${DISTDIR}
 	unpack ${TARBALL}
 
 	S=${WORKDIR}/andor/
+	cd ${S}
 
 	if use modules; then
-		cd src/driver
+		pushd src/driver
 		if kernel_is le 2 4; then
 			mv Makefile2.4 Makefile
 		else
 			mv Makefile2.6 Makefile
 		fi
+		popd
 	fi
 
 	# fix issue 2: deprecated SYSFS{}= keyname
-	sed -i -e 's/SYSFS/ATTRS/g' andor/script/andor.rules
+	sed -i -e 's/SYSFS/ATTRS/g' script/andor.rules
 }
 
 src_compile() {

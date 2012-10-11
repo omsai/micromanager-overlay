@@ -5,7 +5,7 @@
 EAPI=4
 inherit autotools multilib
 
-ZIP="Andor_SDK3_(Linux)_V${PV}.zip"
+ZIP="Andor_SDK3_(Linux)_${PV}.zip"
 TARBALL="andor-sdk3-${PV}.tgz"
 AUTOTOOLS_FILES="sdk3-autotools.tar.gz"
 
@@ -17,7 +17,7 @@ SRC_URI="${ZIP_URI} ${AUTOTOOLS_URI}"
 
 LICENSE="Andor-EULA"
 SLOT="3"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~x86"
 IUSE="+modules"
 
 RESTRICT="fetch"
@@ -44,7 +44,7 @@ src_unpack() {
 	# Upstream double bags tarball in a zip file
 	#
 	unpack ${A}
-	mv ${WORKDIR}/V${PV}/${TARBALL} ${DISTDIR}
+	mv ${WORKDIR}/${TARBALL} ${DISTDIR}
 	unpack ${TARBALL}
 	S=${WORKDIR}/andor/
 
