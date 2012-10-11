@@ -14,8 +14,8 @@ ESVN_REVISION=9309
 
 SLOT="0"
 LICENSE="BSD"
-KEYWORDS="~amd64"
-IUSE="+java clojure ieee1394"
+KEYWORDS="~amd64 ~x86"
+IUSE="+java clojure_editor ieee1394"
 
 RDEPEND="java? (
 		>=virtual/jre-1.5
@@ -33,7 +33,8 @@ DEPEND="dev-lang/swig
 		dev-java/swing-layout:1
 		dev-java/absolutelayout
 		dev-java/jfreechart:1.0
-		clojure? ( dev-util/clooj )
+		dev-lang/clojure
+		clojure_editor? ( dev-util/clooj )
 		sci-libs/TSFProto
 	)"
 
@@ -52,20 +53,26 @@ src_prepare() {
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
 	epatch ${FILESDIR}/boost_ipc_detail.patch
 
-	# prevent imagej removal
+	einfo "Patching to prevent imagej removal"
 	sed -i -e '/rm -rf/d' scripts/Makefile.am
-	# prevent imagej collision
+	einfo "Patching to prevent imagej collision"
 	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
 
 	# TODO Make ebuilds for lwm, gaussian
 	#      Removing plugins requiring these deps until ebuilds made
 	REMOVE_MM_PLUGINS="DataBrowser Gaussian"
-	! use clojure && REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
-	for PLUGIN in REMOVE_MM_PLUGINS; do
+	if ! use clojure_editor ; then
+		REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
+	fi
+	for PLUGIN in ${REMOVE_MM_PLUGINS}; do
+		einfo "Removing ${PLUGIN} plugin"
 		sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
 			-e "/^\tcp $PLUGIN\.jar/d" \
 			plugins/Makefile.am
 	done
+
+	# monkey patch Andor camera driver
+	cp -f ${FILESDIR}/Andor.* DeviceAdapters/Andor/
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
@@ -98,8 +105,8 @@ src_configure() {
 		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
 		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
 		java-pkg_jar-from imagej
-		if use clojure; then
-			java-pkg_jar-from clojure-1.3,clojure-contrib-1.1
+		java-pkg_jar-from clojure-1.4
+		if use clojure_editor; then
 			java-pkg_jar-from clooj clooj-0.3.4-standalone.jar clooj.jar
 		fi
 		java-pkg_jar-from protobuf protobuf.jar gproto.jar
