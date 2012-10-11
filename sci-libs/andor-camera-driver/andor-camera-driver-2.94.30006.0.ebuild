@@ -124,6 +124,7 @@ src_install() {
 	doenvd ${envd}
 	( into ${ANDOR_HOME}; dolib.so lib/${SDKLIB} )
 	dosym ../../${ANDOR_HOME}/$(get_libdir)/${SDKLIB} /usr/$(get_libdir)/libandor.so.2
+	dosym ../../${ANDOR_HOME}/$(get_libdir)/${SDKLIB} /usr/$(get_libdir)/libandor.so
 
 	# firmware files
 	#
