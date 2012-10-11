@@ -14,13 +14,14 @@ SRC_URI="https://www.andor.com/my/ -> ${ZIP}"
 
 LICENSE="Andor-EULA"
 SLOT="2"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 x86"
 IUSE="+modules +usb"
 
 RESTRICT="fetch"
 
 DEPEND=""
-RDEPEND="usb? (	virtual/libusb:0 )"
+RDEPEND="usb? ( virtual/libusb:0
+				dev-libs/libusb-compat )"
 
 ANDOR_HOME=/opt/andor-2
 SDKLIB=""
