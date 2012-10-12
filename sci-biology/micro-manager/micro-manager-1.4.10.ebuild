@@ -15,7 +15,7 @@ ESVN_REVISION=9309
 SLOT="0"
 LICENSE="BSD"
 KEYWORDS="~amd64 ~x86"
-IUSE="+java clojure_editor ieee1394"
+IUSE="+java clojure_editor ieee1394 andor"
 
 RDEPEND="java? (
 		>=virtual/jre-1.5
@@ -36,7 +36,8 @@ DEPEND="dev-lang/swig
 		dev-lang/clojure
 		clojure_editor? ( dev-util/clooj )
 		sci-libs/TSFProto
-	)"
+	)
+	andor? ( sci-libs/andor-camera-driver:2 )"
 
 src_unpack() {
 	subversion_src_unpack
@@ -71,7 +72,7 @@ src_prepare() {
 			plugins/Makefile.am
 	done
 
-	# monkey patch Andor camera driver
+	einfo "Monkey patch Andor camera driver"
 	cp -f ${FILESDIR}/Andor.* DeviceAdapters/Andor/
 
 	if use java; then
