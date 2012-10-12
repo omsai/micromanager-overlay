@@ -1,0 +1,20 @@
+--- DeviceAdapters/configure.in.orig	2012-10-12 18:35:21.972213090 -0400
++++ DeviceAdapters/configure.in	2012-10-12 18:38:07.693141288 -0400
+@@ -131,13 +131,13 @@
+ 
+ # Andor cameras on linux 
+ AC_MSG_CHECKING(for Andor cameras)
+-AM_CONDITIONAL([BUILD_ANDOR],[test -f "/usr/local/include/atmcdLXd.h"])
+-if test -f "/usr/local/include/atmcdLXd.h" ; then
++AC_SEARCH_LIBS([SaveAsSif], [andor], ANDORFOUND=yes, AC_MSG_RESULT([not found]))
++AM_CONDITIONAL([BUILD_ANDOR], [test x$ANDORFOUND = xyes])
++if test x$ANDORFOUND = xyes ; then
+    AC_MSG_RESULT([found])
+-else
+-   AC_MSG_RESULT([not found])
+ fi
+ 
++
+ # Andor laser combiner on linux 
+ AC_MSG_CHECKING(for Andor laser combiner)
+ AM_CONDITIONAL([BUILD_ANDORLASERCOMBINER],[test -f "/usr/local/include/ALC_REV.h"])

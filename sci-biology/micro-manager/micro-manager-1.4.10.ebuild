@@ -49,6 +49,8 @@ src_prepare() {
 		sed -i -e "s/libz.a/libz.so/g" $file
 	done
 
+	epatch ${FILESDIR}/andor_camera_detection.patch
+
 	subversion_bootstrap
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
