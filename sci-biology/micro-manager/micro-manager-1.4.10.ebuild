@@ -59,19 +59,6 @@ src_prepare() {
 	einfo "Patching to prevent imagej collision"
 	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
 
-	# TODO Make ebuilds for lwm, gaussian
-	#      Removing plugins requiring these deps until ebuilds made
-	REMOVE_MM_PLUGINS="DataBrowser Gaussian"
-	if ! use clojure_editor ; then
-		REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
-	fi
-	for PLUGIN in ${REMOVE_MM_PLUGINS}; do
-		einfo "Removing ${PLUGIN} plugin"
-		sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
-			-e "/^\tcp $PLUGIN\.jar/d" \
-			plugins/Makefile.am
-	done
-
 	einfo "Monkey patch Andor camera driver"
 	cp -f ${FILESDIR}/Andor.* DeviceAdapters/Andor/
 
@@ -79,6 +66,19 @@ src_prepare() {
 		# making and clearing a single `build' directory prevents
 		# multiple plugins from being built simultaneously
 		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
+
+		# TODO Make ebuilds for lwm, gaussian
+		#      Removing plugins requiring these deps until ebuilds made
+		REMOVE_MM_PLUGINS="DataBrowser Gaussian"
+		if ! use clojure_editor ; then
+			REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
+		fi
+		for PLUGIN in ${REMOVE_MM_PLUGINS}; do
+			einfo "Removing ${PLUGIN} plugin"
+			sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
+				-e "/^\tcp $PLUGIN\.jar/d" \
+				plugins/Makefile.am
+		done
 
 		eautoconf
 		# FIXME	eautoreconf should replace eautoconf and
