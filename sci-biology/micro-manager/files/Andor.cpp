@@ -143,9 +143,9 @@ long GetTickCount()
 
 // macro for finding the source of unsuccessful return error code
 #define CATCH(err) if (err != DRV_SUCCESS) { \
-   LogMessage("Return code %u instead of DRV_SUCCESS at %s/%s:%d\n", \
-	      err, __FILE__, __FUNCTION__, __LINE__);		     \
-   return (int)ret;					  \
+    LogMessage("Return code %u instead of DRV_SUCCESS at %s/%s:%d\n",	\
+	       err, __FILE__, __FUNCTION__, __LINE__);			\
+    return (int)ret;							\
 }
 ///////////////////////////////////////////////////////////////////////////////
 // Exported MMDevice API

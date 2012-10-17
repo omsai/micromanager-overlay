@@ -61,8 +61,16 @@ src_prepare() {
 	einfo "Patching to prevent imagej collision"
 	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
 
-	einfo "Monkey patch Andor camera driver"
-	cp -f ${FILESDIR}/Andor.* DeviceAdapters/Andor/
+	einfo "Patching Andor camera driver for return code debugging"
+	sed -i -e '/end of kdb/a \
+\
+// macro for finding the source of unsuccessful return error code\
+#define CATCH(err) if (err != DRV_SUCCESS) { \\\
+   LogMessage("Return code %u instead of DRV_SUCCESS at %s/%s:%d\\n", \\\
+			   err, __FILE__, __FUNCTION__, __LINE__); \\\
+   return (int)ret; \\\
+}' DeviceAdapters/Andor/Andor.cpp
+	sed -i -e
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
