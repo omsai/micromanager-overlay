@@ -4,18 +4,20 @@
 
 EAPI=4
 
-inherit eutils subversion autotools java-pkg-opt-2 flag-o-matic java-utils-2
+inherit eutils autotools java-pkg-opt-2 flag-o-matic java-utils-2 vcs-snapshot
+
+MY_PN="micromanager-upstream"
+MY_P="${MY_PN}-${PV}"
 
 DESCRIPTION="The Open Source Microscopy Software"
-HOMEPAGE="http://valelab.ucsf.edu/~MM/MMwiki/"
-ESVN_REPO_URI="https://valelab.ucsf.edu/svn/micromanager2/trunk"
-ESVN_BOOTSTRAP="mmUnixBuild.sh"
-#ESVN_REVISION=9309
+HOMEPAGE="http://www.micro-manager.org/"
+SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 SLOT="0"
-LICENSE="BSD"
-KEYWORDS="~amd64 ~x86"
+LICENSE="LGPL-2.1 BSD GPL-3"
+KEYWORDS="~x86 ~amd64"
 IUSE="+java clojure_editor ieee1394 andor"
+RESTRICT="mirror"
 
 RDEPEND="java? (
 		>=virtual/jre-1.5
@@ -40,10 +42,6 @@ DEPEND="dev-lang/swig
 	)
 	andor? ( sci-libs/andor-camera-driver:2 )"
 
-src_unpack() {
-	subversion_src_unpack
-}
-
 src_prepare() {
 	# fix zlib detection
 	for file in configure.in DeviceKit/configure.in; do
@@ -51,8 +49,11 @@ src_prepare() {
 	done
 
 	epatch ${FILESDIR}/andor_camera_detection.patch
+	epatch ${FILESDIR}/arduino_detection.patch
 
-	subversion_bootstrap
+	ebegin "Bootstrap started.  This can take several minutes"
+	sh mmUnixBuild.sh
+	eend
 
 	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
 	einfo "Patching to prevent imagej collision"
@@ -150,7 +151,7 @@ src_install() {
 		# MM plugins won't load without changing to this path
 		cd /usr/share/imagej/lib
 
-		$(java-config --java) \\
+		\$(java-config --java) \\
 		   -mx1024m \\
 		   -cp \$(java-config -p imagej,libreadline-java) \\
 		   ij.ImageJ -run "Micro-Manager Studio"

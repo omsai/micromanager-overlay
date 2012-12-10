@@ -1,0 +1,11 @@
+--- DeviceAdapters/SerialManager/SerialManager.cpp.orig	2012-12-10 17:58:08.166318377 -0500
++++ DeviceAdapters/SerialManager/SerialManager.cpp	2012-12-10 18:00:00.672911852 -0500
+@@ -195,7 +195,7 @@
+    struct dirent *pent;
+    if (pdir) {
+       while (pent = readdir(pdir)) {
+-         if ( (strstr(pent->d_name, "ttyS") != 0) || (strstr(pent->d_name, "ttyUSB") != 0) )  {
++         if ( (strstr(pent->d_name, "ttyS") != 0) || (strstr(pent->d_name, "ttyUSB") != 0) || (strstr(pent->d_name, "ttyACM") != 0) )  {
+             std::string p = ("/dev/");
+             p.append(pent->d_name);
+             if (portAccessible(p.c_str()))
