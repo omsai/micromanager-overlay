@@ -2,9 +2,10 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-EAPI=4
+EAPI=5
+PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3} )
 
-inherit eutils autotools java-pkg-opt-2 flag-o-matic java-utils-2 vcs-snapshot
+inherit eutils autotools python-single-r1 java-pkg-opt-2 flag-o-matic java-utils-2 vcs-snapshot
 
 MY_PN="micromanager-upstream"
 MY_P="${MY_PN}-${PV}"
@@ -16,7 +17,7 @@ SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz
 SLOT="0"
 LICENSE="LGPL-2.1 BSD GPL-3"
 KEYWORDS="~x86 ~amd64"
-IUSE="+java clojure_editor ieee1394 andor"
+IUSE="+java python clojure_editor ieee1394 andor"
 RESTRICT="mirror"
 
 RDEPEND="java? (
@@ -28,7 +29,7 @@ DEPEND="dev-lang/swig
 	dev-libs/boost
 	java? (
 		>=virtual/jdk-1.5
-		>=sci-biology/imagej-1.46e[plugins]
+		>=sci-biology/imagej-1.46e
 		dev-java/bsh
 		dev-java/commons-math:2
 		dev-java/swingx:1.6
@@ -39,6 +40,10 @@ DEPEND="dev-lang/swig
 		clojure_editor? ( dev-util/clooj )
 		sci-libs/TSFProto
 		sci-libs/bioformats
+	)
+	python? (
+		${PYTHON_DEPS}
+		dev-python/numpy
 	)
 	andor? ( sci-libs/andor-camera-driver:2 )"
 
@@ -61,6 +66,13 @@ src_prepare() {
 
 	einfo "Patching to prevent scripts removal"
 	sed -i -e '/rm -rf $(IJPATH)\/scripts.*$/d' scripts/Makefile.am
+
+	if use python; then
+		einfo "Patching numpy include directory"
+		local numpy_sitedir
+		numpy_includedir=$(python_get_sitedir)/numpy/core/include/numpy
+		sed -i -e "/include_dirs/s/=.*/= \[\"${numpy_includedir}\"\]/" setup.py
+	fi
 
 	if use java; then
 		# making and clearing a single `build' directory prevents
@@ -122,7 +134,9 @@ src_configure() {
 		IMAGEJ_DIR='no'
 	fi
 
-	econf --with-imagej=${IMAGEJ_DIR}
+	econf \
+		--with-imagej=${IMAGEJ_DIR} \
+		$(use_enable python)
 }
 
 src_compile() {
