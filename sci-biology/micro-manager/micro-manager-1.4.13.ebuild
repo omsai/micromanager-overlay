@@ -4,6 +4,7 @@
 
 EAPI=5
 PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3} )
+PYTHON_SINGLE_TARGET="python2_7"
 
 inherit eutils autotools python-single-r1 java-pkg-opt-2 flag-o-matic java-utils-2 vcs-snapshot
 
@@ -47,6 +48,11 @@ DEPEND="dev-lang/swig
 	)
 	andor? ( sci-libs/andor-camera-driver:2 )"
 
+pkg_setup() {
+	use java && java-pkg-opt-2_pkg_setup
+	use python && python-single-r1_pkg_setup
+}
+
 src_prepare() {
 	# fix zlib detection
 	for file in configure.in DeviceKit/configure.in; do
@@ -71,7 +77,7 @@ src_prepare() {
 		einfo "Patching numpy include directory"
 		local numpy_sitedir
 		numpy_includedir=$(python_get_sitedir)/numpy/core/include/numpy
-		sed -i -e "/include_dirs/s/=.*/= \[\"${numpy_includedir}\"\]/" setup.py
+		sed -i -e "/include_dirs/s~=.*~= \[\"${numpy_includedir}\"\]~" MMCorePy_wrap/setup.py
 	fi
 
 	if use java; then
