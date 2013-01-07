@@ -78,6 +78,9 @@ src_prepare() {
 		local numpy_sitedir
 		numpy_includedir=$(python_get_sitedir)/numpy/core/include/numpy
 		sed -i -e "/include_dirs/s~=.*~= \[\"${numpy_includedir}\"\]~" MMCorePy_wrap/setup.py
+
+		einfo "Patching Python bindings to respect DESTDIR"
+		sed -i -e 's: $(DEVICEADAPTERPATH): $(DESTDIR)\/$(DEVICEADAPTERPATH):' MMCorePy_wrap/Makefile.am
 	fi
 
 	if use java; then
