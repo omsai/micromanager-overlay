@@ -66,7 +66,6 @@ src_prepare() {
 	sh mmUnixBuild.sh
 	eend
 
-	# ESVN_PATCHES won't apply after bootstrap, so must use epatches
 	einfo "Patching to prevent imagej collision"
 	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
 
