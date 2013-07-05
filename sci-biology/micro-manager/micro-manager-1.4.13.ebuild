@@ -81,7 +81,7 @@ src_prepare() {
 	fi
 
 	if use java; then
-		einfo "Patching plugin build to allow multiple threads"
+		einfo "Patching to allow parallel compilations of plugins"
 		# making and clearing a single `build' directory prevents
 		# multiple plugins from being built simultaneously
 		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
