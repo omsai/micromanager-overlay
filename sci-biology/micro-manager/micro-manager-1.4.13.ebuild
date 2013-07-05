@@ -54,11 +54,10 @@ pkg_setup() {
 }
 
 src_prepare() {
-	# fix zlib detection
+	einfo "Patching zlib detection"
 	for file in configure.in DeviceKit/configure.in; do
 		sed -i -e "s/libz.a/libz.so/g" $file
 	done
-
 	epatch ${FILESDIR}/andor_camera_detection.patch
 	epatch ${FILESDIR}/arduino_detection.patch
 
@@ -68,7 +67,6 @@ src_prepare() {
 
 	einfo "Patching to prevent imagej collision"
 	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
-
 	einfo "Patching to prevent scripts removal"
 	sed -i -e '/rm -rf $(IJPATH)\/scripts.*$/d' scripts/Makefile.am
 
@@ -83,6 +81,7 @@ src_prepare() {
 	fi
 
 	if use java; then
+		einfo "Patching plugin build to allow multiple threads"
 		# making and clearing a single `build' directory prevents
 		# multiple plugins from being built simultaneously
 		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
@@ -93,6 +92,7 @@ src_prepare() {
 		if ! use clojure_editor ; then
 			REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
 		fi
+		einfo "Removing unsupported Clojure plugins: ${REMOVE_MM_PLUGINS}"
 		for PLUGIN in ${REMOVE_MM_PLUGINS}; do
 			einfo "Removing ${PLUGIN} plugin"
 			sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
