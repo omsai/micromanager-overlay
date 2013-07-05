@@ -5,22 +5,12 @@
 layman -o https://raw.github.com/omsai/lifescience-overlay/master/overlay.xml -f -a lifescience
 ```
 
-2.  Update overlay
-```
-layman -S
-```
+2.  Update overlay using `layman -S`
 
-3. Install desired main packages from list below
+3. Install desired main packages:
 
-### Main packages
-
-```bash
-## µManager
-emerge sci-biology/micro-manager
-
-## Andor camera drivers (CCD / EMCCD)
-emerge sci-libs/andor-camera-driver:2
-
-## Andor camera drivers (Scientific CMOS)
-emerge sci-libs/andor-camera-driver:3
-```
+Package Name | Description
+------------ | ------------
+sci-biology/micro-manager | µManager microscopy software
+sci-libs/andor-camera-driver:2 | Andor EM/CCD camera drivers
+sci-libs/andor-camera-driver:3 | Andor CMOS camera driver
