@@ -2,7 +2,7 @@
 
 1.  Add this overlay using `app-portage/layman`
 ```
-layman -o https://raw.github.com/omsai/lifescience-overlay/master/overlay.xml -f -a lifescience
+layman -o https://raw.github.com/omsai/microscopy-overlay/master/overlay.xml -f -a microscopy
 ```
 
 2.  Update overlay using `layman -S`

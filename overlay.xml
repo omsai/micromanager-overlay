@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layman>
-    <overlay name="micromanager" quality="experimental" status="unofficial"
-        type="git" src="git://github.com/omsai/micromanager-overlay.git">
-        <link>//github.com/omsai/micromanager-overlay</link>
-        <description> Micromanager Overlay </description>
+    <overlay name="microscopy" quality="experimental" status="unofficial"
+        type="git" src="git://github.com/omsai/microscopy-overlay.git">
+        <link>//github.com/omsai/microscopy-overlay</link>
+        <description> Microscopy Overlay </description>
     </overlay>
 </layman>
