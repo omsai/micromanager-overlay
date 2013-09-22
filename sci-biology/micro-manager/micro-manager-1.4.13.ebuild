@@ -58,6 +58,7 @@ src_prepare() {
 	for file in configure.in DeviceKit/configure.in; do
 		sed -i -e "s/libz.a/libz.so/g" $file
 	done
+	epatch ${FILESDIR}/mmcorepy_setup_add_zlib.patch
 	epatch ${FILESDIR}/andor_camera_detection.patch
 	epatch ${FILESDIR}/arduino_detection.patch
 

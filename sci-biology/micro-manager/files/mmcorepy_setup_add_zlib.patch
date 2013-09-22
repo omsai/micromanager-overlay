@@ -1,0 +1,10 @@
+--- MMCorePy_wrap/setup.py.orig	2013-07-06 09:51:46.956669810 -0400
++++ MMCorePy_wrap/setup.py	2013-07-06 09:54:03.096967822 -0400
+@@ -26,6 +26,7 @@
+ 			'../MMCore/MMCore.cpp',
+ 			'../MMCore/PluginManager.cpp'],
+ 			language = "c++",
++			libraries = ['z'],
+ 			extra_objects = [],
+                         include_dirs = ["/Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/Python.framework/Versions/2.5/Extras/lib/python/numpy/core/include/numpy"]
+                            )
