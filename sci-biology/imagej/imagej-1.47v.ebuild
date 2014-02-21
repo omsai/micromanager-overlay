@@ -1,4 +1,4 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -43,11 +43,6 @@ src_unpack() {
 	if ! use debug ; then
 		sed -i 's: debug="on">: debug="off">:' ${S}/build.xml
 	fi
-}
-
-src_prepare() {
-	# for icedtea
-	epatch ${FILESDIR}/fix_non-ascii_char.patch
 }
 
 src_compile() {
