@@ -1,0 +1,11 @@
+--- source/ij/process/AutoThresholder.java	2012-07-17 11:23:08.000000000 -0400
++++ source/ij/process/AutoThresholder.java.new	2012-09-28 10:15:29.997623832 -0400
+@@ -606,7 +606,7 @@
+ 		//
+ 		// Assumes a bimodal histogram. The histogram needs is smoothed (using a
+ 		// running average of size 3, iteratively) until there are only two local maxima.
+-		// Threshold t is such that yt−1 > yt <= yt+1.
++		// Threshold t is such that yt-1 > yt <= yt+1.
+ 		// Images with histograms having extremely unequal peaks or a broad and
+ 		// flat valleys are unsuitable for this method.
+ 		int iter =0;
