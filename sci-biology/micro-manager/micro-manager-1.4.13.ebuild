@@ -1,4 +1,4 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2014 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
@@ -6,7 +6,7 @@ EAPI=5
 PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3} )
 PYTHON_SINGLE_TARGET="python2_7"
 
-inherit eutils autotools python-single-r1 java-pkg-opt-2 flag-o-matic java-utils-2 vcs-snapshot
+inherit eutils autotools python-single-r1 java-pkg-opt-2 flag-o-matic java-utils-2 linux-info vcs-snapshot
 
 MY_PN="micromanager-upstream"
 MY_P="${MY_PN}-${PV}"
@@ -16,7 +16,7 @@ HOMEPAGE="http://www.micro-manager.org/"
 SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 SLOT="0"
-LICENSE="LGPL-2.1 BSD GPL-3"
+LICENSE="LGPL-2.1 BSD GPL-1 GPL-3"
 KEYWORDS="~x86 ~amd64"
 IUSE="+java python clojure_editor ieee1394 andor"
 RESTRICT="mirror"
@@ -49,6 +49,16 @@ DEPEND="dev-lang/swig
 	andor? ( sci-libs/andor-camera-driver:2 )"
 
 pkg_setup() {
+	if linux_config_exists; then
+		linux_chkconfig_string VIDEO_V4L2
+		if ! linux_chkconfig_present VIDEO_V4L2; then
+			einfo "Enable MEDIA_CAMERA_SUPPORT in kernel to install v4l DeviceAdapter."
+		fi
+	else
+		ewarn "Could not confirm that v4l is compiled in kernel, so video4linux"
+		ewarn "DeviceAdapter may silently fail to compile."
+	fi
+
 	use java && java-pkg-opt-2_pkg_setup
 	use python && python-single-r1_pkg_setup
 }
@@ -59,6 +69,8 @@ src_prepare() {
 		sed -i -e "s/libz.a/libz.so/g" $file
 	done
 	epatch ${FILESDIR}/mmcorepy_setup_add_zlib.patch
+	einfo "Patching v4l detection"
+	sed -i -e "s/libv4l2.h/linux\/videodev2.h/g" DeviceAdapters/configure.in
 	epatch ${FILESDIR}/andor_camera_detection.patch
 	epatch ${FILESDIR}/arduino_detection.patch
 
