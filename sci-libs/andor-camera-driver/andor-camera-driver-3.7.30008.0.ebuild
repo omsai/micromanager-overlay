@@ -66,9 +66,6 @@ src_prepare() {
 	sed -i -e "s/VM_RESERVED/VM_DONTEXPAND | VM_DONTDUMP/" bflki.c
 	eend
 	popd
-	ebegin "Patching config file with Gentoo prefix"
-	sed -i -e "s:/usr/local/lib/:${LIBDIR}/:" etc/andor_sdk.conf
-	eend
 }
 
 src_install() {
