@@ -12,7 +12,7 @@ MODULESD_BITFLOW_ADDITIONS=(
 	"options bitflow fwDelay1=200"
 	"options bitflow customFlags=1"
 )
-inherit eutils linux-mod multilib
+inherit linux-mod multilib
 
 DESCRIPTION="SDK library for scientific CMOS cameras"
 HOMEPAGE="http://www.andor.com/software/sdk/"
@@ -52,7 +52,7 @@ pkg_setup() {
 
 	linux-mod_pkg_setup
 
-	BUILD_PARAMS="-C /$(get_libdir)/modules/${KV_FULL}/build"
+	BUILD_PARAMS="-C /lib/modules/${KV_FULL}/build"
 	BUILD_PARAMS+=" M=${S}/bitflow/drv/"
 	BUILD_TARGETS=" "
 }
@@ -82,19 +82,14 @@ src_install() {
 	doenvd ${envd}
 	pushd $(usex x86 "x86" "x86_64")
 	dodir ${LIBDIR}
+	dodir /usr/$(get_libdir)
 	for lib in $( ls *.so.${PV} ) ; do
+		# Versioned library.
 		( into ${PREFIX}; dolib.so ${lib} )
-	done
-	popd
-
-	# SDK library symlinks.
-	pushd ${D}${LIBDIR} || die
-	for lib_name in $( ls *.${PV} \
-				| xargs -n1 basename ) ; do
-		lib_base=${lib_name%%.*}
-		src=${lib_base}.so.${PV}
+		# Symlinks.
+		local lib_base=${lib%%.*}
 		for link_name in ${lib_base}.so{.3,} ; do
-			dosym ${src} ${LIBDIR}/${link_name}
+			dosym ../..${LIBDIR}/${lib} /usr/$(get_libdir)/${link_name}
 		done
 	done
 	popd
