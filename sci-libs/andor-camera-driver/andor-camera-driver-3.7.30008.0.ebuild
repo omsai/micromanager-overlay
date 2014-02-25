@@ -7,12 +7,12 @@ S=${WORKDIR}/andor
 MODULE_NAMES="bitflow(bitflow:${S}/bitflow/drv/)"
 MODULESD_BITFLOW_DOCS="bitflow/README_dist"
 MODULESD_BITFLOW_ADDITIONS=(
-	"modprobe v4l2_common"
-	"modprobe videodev"
-	"insmod bitflow.ko fwDelay1=200 customFlags=1"
-	"chmod a+rw /dev/video*"
+	"options /sbin/modprobe v4l2_common"
+	"options /sbin/modprobe videodev"
+	"options bitflow fwDelay1=200"
+	"options bitflow customFlags=1"
 )
-inherit linux-mod multilib
+inherit eutils linux-mod multilib
 
 DESCRIPTION="SDK library for scientific CMOS cameras"
 HOMEPAGE="http://www.andor.com/software/sdk/"
@@ -47,7 +47,7 @@ pkg_setup() {
 	else
 		CONFIG_CHECK="VIDEO_V4L1_COMPAT"
 		ERROR_V4L1_COMPAT="Kernel must be compiled with V4L1_COMPAT support!"
-		MODULESD_BITFLOW_ADDITIONS[0]="modprobe v4l1_compat"
+		MODULESD_BITFLOW_ADDITIONS[0]="options /sbin/modprobe v4l1_compat"
 	fi
 
 	linux-mod_pkg_setup
@@ -105,8 +105,9 @@ src_install() {
 }
 
 pkg_postinst() {
-	ewarn "Ensure your boot loader has the kernel 'nopat' parameter."
+	ewarn "Ensure your boot loader has the kernel 'nopat' parameter"
+	ewarn "and that you are in the video group."
 	echo
 	einfo "To load the kernel module immediately, run:"
-	einfo "modprobe /etc/moprobe.d/bitflow.conf"
+	einfo "  modprobe bitflow"
 }
