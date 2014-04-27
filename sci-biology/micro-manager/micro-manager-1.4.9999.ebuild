@@ -17,9 +17,8 @@ ESVN_BOOTSTRAP="autogen.sh"
 SLOT="0"
 LICENSE="GPL-3 BSD LGPL-2.1"
 KEYWORDS="~amd64"
-IUSE_cameras="+ieee1394"
 IUSE_cameras_proprietary="andor andorsdk3"
-IUSE="+X +java +python +doc +source +examples ${IUSE_cameras} ${IUSE_cameras_proprietary}"
+IUSE="+X +java python doc ${IUSE_cameras_proprietary}"
 REQUIRED_USE="X? ( java ) python? ( ${PYTHON_REQUIRED_USE} )"
 
 # FIXME verify which deps are conditional on X
@@ -28,22 +27,29 @@ dev-java/commons-math:2
 sci-libs/TSFProto
 sci-libs/bioformats
 X? (
->=sci-biology/imagej-1.48v
 dev-java/absolutelayout
 dev-java/bsh
 dev-java/jfreechart:1.0
 dev-java/swing-layout:1
 dev-java/swingx:1.6
 dev-lang/clojure
+>=sci-biology/imagej-1.48
 )
 "
 CAMERA_DEPS="
-ieee1394? ( media-libs/libdc1394 )
+dev-libs/hidapi
+dev-libs/libusb-compat
+media-libs/freeimage
+media-libs/libdc1394
+media-libs/libgphoto2
+media-libs/opencv
+"
+CAMERA_DEPS_PROPRIETARY="
 andor? ( sci-libs/andor-camera-driver:2 )
 andorsdk3? ( sci-libs/andor-camera-driver:3 )
 "
 COMMON_DEPS="
-${CAMERA_DEPS}
+${CAMERA_DEPS} ${CAMERA_DEPS_PROPRIETARY}
 python? ( dev-python/numpy[${PYTHON_USEDEP}] ${PYTHON_DEPS} )
 "
 RDEPEND="
@@ -70,7 +76,10 @@ src_prepare() {
 }
 
 src_configure() {
-	use X && local ij_jar=$(java-pkg_getjar imagej ij.jar)
+	if use X ; then
+		local ij_jar=$(java-pkg_getjar imagej ij.jar)
+		local ij_dir=$(dirname ${ij_jar})
+	fi
 
 	if use java ; then
 		local jdk_home=$(java-config -O)
@@ -90,7 +99,7 @@ src_configure() {
 
 	econf \
 		$(use !X && echo "--disable-java-app") \
-		$(use_enable X imagej-plugin $(dirname ${ij_jar})) \
+		$(use_enable X imagej-plugin ${ij_dir}) \
 		--disable-install-dependency-jars \
 		$(use_with java java ${jdk_home}) \
 		$(use_with python python ${python_home}) \
