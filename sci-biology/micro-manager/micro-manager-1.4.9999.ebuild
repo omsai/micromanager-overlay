@@ -6,7 +6,7 @@ EAPI=5
 
 PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3} )
 DISTUTILS_OPTIONAL=1
-CONFIG_CHECK="~VIDEO_V4L2"
+CONFIG_CHECK="VIDEO_V4L2"
 inherit java-pkg-opt-2 distutils-r1 linux-info subversion
 
 DESCRIPTION="The Open Source Microscopy Software"
@@ -17,25 +17,10 @@ ESVN_BOOTSTRAP="autogen.sh"
 SLOT="0"
 LICENSE="GPL-3 BSD LGPL-2.1"
 KEYWORDS="~amd64"
-IUSE_cameras_proprietary="andor andorsdk3"
-IUSE="+X +java python doc ${IUSE_cameras_proprietary}"
+IUSE_proprietary="andor andorsdk3"
+IUSE="+X +java python doc ${IUSE_proprietary}"
 REQUIRED_USE="X? ( java ) python? ( ${PYTHON_REQUIRED_USE} )"
 
-# FIXME verify which deps are conditional on X
-JAVA_DEPS="
-dev-java/commons-math:2
-sci-libs/TSFProto
-sci-libs/bioformats
-X? (
-dev-java/absolutelayout
-dev-java/bsh
-dev-java/jfreechart:1.0
-dev-java/swing-layout:1
-dev-java/swingx:1.6
-dev-lang/clojure
->=sci-biology/imagej-1.48
-)
-"
 CAMERA_DEPS="
 dev-libs/hidapi
 dev-libs/libusb-compat
@@ -44,24 +29,37 @@ media-libs/libdc1394
 media-libs/libgphoto2
 media-libs/opencv
 "
-CAMERA_DEPS_PROPRIETARY="
+PROPRIETARY_DEPS="
 andor? ( sci-libs/andor-camera-driver:2 )
 andorsdk3? ( sci-libs/andor-camera-driver:3 )
 "
 COMMON_DEPS="
-${CAMERA_DEPS} ${CAMERA_DEPS_PROPRIETARY}
+${CAMERA_DEPS}
+${PROPRIETARY_DEPS}
+X? (
+dev-java/commons-math:2
+sci-libs/TSFProto
+sci-libs/bioformats
+dev-java/absolutelayout
+dev-java/bsh
+dev-java/jfreechart:1.0
+dev-java/swing-layout:1
+dev-java/swingx:1.6
+dev-lang/clojure
+>=sci-biology/imagej-1.48
+)
 python? ( dev-python/numpy[${PYTHON_USEDEP}] ${PYTHON_DEPS} )
 "
 RDEPEND="
 ${COMMON_DEPS}
-java? (	>=virtual/jre-1.6 ${JAVA_DEPS} )
+java? (	>=virtual/jre-1.6 )
 "
 DEPEND="
 ${COMMON_DEPS}
-dev-lang/swig
 dev-libs/boost
-java? (	>=virtual/jdk-1.6 ${JAVA_DEPS} )
 doc? ( app-doc/doxygen )
+java? (	>=virtual/jdk-1.6 dev-lang/swig )
+python? ( dev-lang/swig )
 "
 
 pkg_setup() {
