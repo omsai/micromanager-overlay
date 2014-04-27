@@ -22,7 +22,6 @@ IUSE_cameras_proprietary="andor andorsdk3"
 IUSE="+X +python +doc +source +examples
 ${IUSE_cameras} ${IUSE_cameras_proprietary}"
 REQUIRED_USE="X? ( java ) python? ( ${PYTHON_REQUIRED_USE} )"
-RESTRICT="mirror"
 
 # FIXME verify which deps are conditional on X
 JAVA_DEPS="
@@ -86,7 +85,7 @@ src_configure() {
 			$(use_enable X imagej-plugin $(dirname ${ij_jar})) \
 			--disable-install-dependency-jars \
 			$(use_with java java ${jdk_home}) \
-			$(use_with python ) \
+			$(use_with python $(python_get_library_path)) \
 			$(use_with X ij-jar ${ij_jar})
 	)
 }
