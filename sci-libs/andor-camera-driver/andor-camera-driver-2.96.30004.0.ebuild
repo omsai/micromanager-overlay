@@ -81,7 +81,7 @@ src_install() {
 	# SDK library.
 	#
 	local ANDOR_HOME=/opt/andor-2
-	local SDKLIB=libandor-stdc++6-$(use amd64 && echo x86_64 || echo i386).so.${PV}
+	local SDKLIB=libandor-stdc++6-$(usex amd64 "x86_64" "i386").so.${PV}
 	local envd=10$(basename ${ANDOR_HOME})
 	echo "LDPATH=${ANDOR_HOME}" > ${envd}
 	doenvd ${envd}
