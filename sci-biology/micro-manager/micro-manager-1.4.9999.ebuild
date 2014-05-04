@@ -74,20 +74,22 @@ src_prepare() {
 }
 
 src_configure() {
+	local conf_opts
+
 	if use X ; then
 		local ij_jar=$(java-pkg_getjar imagej ij.jar)
 		local ij_dir=$(dirname ${ij_jar})
+	else
+		conf_opts+=" --disable-java-app"
 	fi
 
 	if use java ; then
 		local jdk_home=$(java-config -O)
-		# FIXME avoid using environmental variables here by patching
-		# ./m4/mm_java.m4 to resolve the java* symlinks in a sane way.
 		# ./configure fails when it sees eselect-java's bash scripts.
-		export JAVA_HOME=${jdk_home}
-		export JAVA=$(java-config -J)
-		export JAVAC=$(java-config -c)
-		export JAR=$(java-config -j)
+		conf_opts+=" JAVA_HOME=${jdk_home}"
+		conf_opts+=" JAVA=$(java-config -J)"
+		conf_opts+=" JAVAC=$(java-config -c)"
+		conf_opts+=" JAR=$(java-config -j)"
 	fi
 
 	if use python ; then
@@ -96,12 +98,12 @@ src_configure() {
 	fi
 
 	econf \
-		$(use !X && echo "--disable-java-app") \
 		$(use_enable X imagej-plugin ${ij_dir}) \
 		--disable-install-dependency-jars \
 		$(use_with java java ${jdk_home}) \
 		$(use_with python python ${python_home}) \
-		$(use_with X ij-jar ${ij_jar})
+		$(use_with X ij-jar ${ij_jar}) \
+		${conf_opts}
 }
 
 src_install() {
