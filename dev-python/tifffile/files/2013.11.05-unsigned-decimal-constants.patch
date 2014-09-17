@@ -1,0 +1,41 @@
+--- tifffile.c.orig	2014-09-17 03:00:41.687043315 -0400
++++ tifffile.c	2014-09-17 03:00:59.659043528 -0400
+@@ -639,7 +639,7 @@
+     table_len = 258;
+     bitw = 9;
+     shr = 23;
+-    mask = 4286578688;
++    mask = 4286578688u;
+     bitcount = 0;
+     result_len = 0;
+     code = 0;
+@@ -671,7 +671,7 @@
+             }
+             bitw = 9;
+             shr = 23;
+-            mask = 4286578688;
++            mask = 4286578688u;
+ 
+             /* read next code */
+             code = *((unsigned int *)((void *)(encoded + (bitcount / 8))));
+@@ -758,17 +758,17 @@
+             case 511:
+                 bitw = 10;
+                 shr = 22;
+-                mask = 4290772992;
++                mask = 4290772992u;
+                 break;
+             case 1023:
+                 bitw = 11;
+                 shr = 21;
+-                mask = 4292870144;
++                mask = 4292870144u;
+                 break;
+             case 2047:
+                 bitw = 12;
+                 shr = 20;
+-                mask = 4293918720;
++                mask = 4293918720u;
+         }
+     }
+ 
