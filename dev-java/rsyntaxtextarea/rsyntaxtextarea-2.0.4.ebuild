@@ -29,7 +29,9 @@ src_prepare() {
 	sed -i -e 's/throws SAXException /throws SAXException, IOException /g' \
 		src/org/fife/ui/${PN}/parser/XmlParser.java
 	# Silence compatibility warning since it's now been fixed for > 1.4 VMs
-	sed -i -e 's/^.*<echo.*$//g' build.xml
+	sed -i -e 's/^.*<echo.*$//g' \
+		-e 's/lines,var,source/lines,vars,source/' \
+		build.xml
 }
 
 src_install() {
