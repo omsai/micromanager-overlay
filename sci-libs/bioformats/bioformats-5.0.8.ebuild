@@ -1,10 +1,11 @@
-# Copyright 1999-2012 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=5
 
-inherit vcs-snapshot java-pkg-2 java-ant-2
+PYTHON_COMPAT=( python2_7 )
+inherit vcs-snapshot python-any-r1 java-pkg-2 java-ant-2
 
 DESCRIPTION="Java library for reading and writing data in life sciences image file formats"
 HOMEPAGE="http://loci.wisc.edu/software/bio-formats"
@@ -20,6 +21,13 @@ DEPEND=">=virtual/jdk-1.5
 RDEPEND=">=virtual/jre-1.5"
 
 EANT_BUILD_TARGET="jars"
+
+S="${WORKDIR}/v${PV}"
+
+pkg_setup() {
+	python-any-r1_pkg_setup
+	java-pkg-2_pkg_setup
+}
 
 src_install() {
 	# remove upstream's binary jars
