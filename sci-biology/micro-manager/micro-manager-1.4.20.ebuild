@@ -1,203 +1,175 @@
-# Copyright 1999-2014 Gentoo Foundation
+# Copyright 1999-2015 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
 EAPI=5
-PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3} )
-PYTHON_SINGLE_TARGET="python2_7"
 
-inherit eutils autotools python-single-r1 java-pkg-opt-2 flag-o-matic java-utils-2 linux-info vcs-snapshot
-
-MY_PN="micromanager-upstream"
-MY_P="${MY_PN}-${PV}"
+PYTHON_COMPAT=( python{2_6,2_7,3_1,3_2,3_3,3_4} )
+DISTUTILS_OPTIONAL=1
+CONFIG_CHECK="VIDEO_V4L2"
+JAVA_ANT_DISABLE_ANT_CORE_DEP=1
+inherit autotools java-pkg-opt-2 java-ant-2 distutils-r1 linux-info vcs-snapshot
 
 DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://www.micro-manager.org/"
 SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 SLOT="0"
-LICENSE="LGPL-2.1 BSD GPL-1 GPL-3"
-KEYWORDS="~x86 ~amd64"
-IUSE="+java python clojure_editor ieee1394 andor"
-RESTRICT="mirror"
+LICENSE="GPL-3 BSD LGPL-2.1"
+KEYWORDS="~amd64 ~x86"
+IUSE_proprietary="andor andorsdk3"
+IUSE="+X +java python doc ${IUSE_proprietary}"
+REQUIRED_USE="X? ( java ) python? ( ${PYTHON_REQUIRED_USE} )"
 
-RDEPEND="java? (
-		>=virtual/jre-1.5
-	)
-	ieee1394? ( media-libs/libdc1394 )"
-
-DEPEND="dev-lang/swig
-	dev-libs/boost
-	java? (
-		>=virtual/jdk-1.5
-		>=sci-biology/imagej-1.46e
-		dev-java/bsh
+CAMERA_DEPS="
+	dev-libs/hidapi
+	dev-libs/libusb-compat
+	media-libs/freeimage
+	media-libs/libdc1394
+	media-libs/libgphoto2
+	media-libs/opencv
+"
+PROPRIETARY_DEPS="
+	andor? ( sci-libs/andor-camera-driver:2 )
+	andorsdk3? ( sci-libs/andor-camera-driver:3 )
+"
+COMMON_DEPS="
+	${CAMERA_DEPS}
+	${PROPRIETARY_DEPS}
+	X? (
 		dev-java/commons-math:2
-		dev-java/swingx:1.6
-		dev-java/swing-layout:1
+		dev-java/commons-math:3
+		sci-libs/TSFProto:0
+		sci-libs/bioformats:0
 		dev-java/absolutelayout
+		dev-java/bsh:0
+		dev-java/gson:2.2.2
+		dev-java/guava:17
+		dev-java/jcommon:1.0
 		dev-java/jfreechart:1.0
-		dev-lang/clojure
-		clojure_editor? ( dev-util/clooj )
-		sci-libs/TSFProto
-		sci-libs/bioformats
+		dev-java/joda-time:0
+		dev-java/miglayout:0
+		dev-java/rsyntaxtextarea:0
+		dev-java/swing-layout:1
+		dev-java/swingx:1.6
+		dev-lang/clojure:1.6
+		dev-java/clojure-core-cache:0
+		dev-java/clojure-core-memoize:0
+		dev-java/clojure-data-json:0
+		dev-libs/protobuf:0=[java]
+		>=sci-biology/imagej-1.48:0=
 	)
-	python? (
-		${PYTHON_DEPS}
-		dev-python/numpy
+	python? ( dev-python/numpy[${PYTHON_USEDEP}] ${PYTHON_DEPS} )
+"
+RDEPEND="
+	${COMMON_DEPS}
+	java? (	>=virtual/jre-1.6 )
+"
+DEPEND="
+	${COMMON_DEPS}
+	dev-libs/boost
+	doc? ( app-doc/doxygen )
+	java? (
+		>=virtual/jdk-1.6
+		dev-lang/swig
+		dev-java/ant-core
+		>=dev-java/ant-contrib-1.0_beta3:0
+		dev-java/hamcrest-core:1.3
+		>=dev-java/junit-4.11:4
 	)
-	andor? ( sci-libs/andor-camera-driver:2 )"
+	python? ( dev-lang/swig )
+"
+
+JAVA_ANT_REWRITE_CLASSPATH=1
+JAVA_ANT_CLASSPATH_TAGS="mm-javac javac xjavac"
+EANT_GENTOO_CLASSPATH="bsh,imagej,clojure-1.6,joda-time,bioformats,commons-math-2,commons-math-3,gson-2.2.2,guava-17,jcommon-1.0,jfreechart-1.0,miglayout,rsyntaxtextarea,swingx-1.6,TSFProto,protobuf"
+ECLJ_GENTOO_CLASSPATH="clojure-core-cache,clojure-core-memoize,clojure-data-json"
 
 pkg_setup() {
-	if linux_config_exists; then
-		linux_chkconfig_string VIDEO_V4L2
-		if ! linux_chkconfig_present VIDEO_V4L2; then
-			einfo "Enable MEDIA_CAMERA_SUPPORT in kernel to install v4l DeviceAdapter."
-		fi
-	else
-		ewarn "Could not confirm that v4l is compiled in kernel, so video4linux"
-		ewarn "DeviceAdapter may silently fail to compile."
-	fi
-
-	use java && java-pkg-opt-2_pkg_setup
-	use python && python-single-r1_pkg_setup
+	java-pkg-opt-2_pkg_setup
+	linux-info_pkg_setup
 }
 
 src_prepare() {
-	einfo "Patching zlib detection"
-	for file in configure.in DeviceKit/configure.in; do
-		sed -i -e "s/libz.a/libz.so/g" $file
+	epatch "${FILESDIR}"/secretdevice.patch
+	epatch "${FILESDIR}"/drop_direct_junit_paths.patch
+	epatch "${FILESDIR}"/disable_prefs_during_clojure_builds.patch
+	epatch "${FILESDIR}"/zeisscan_header_case.patch
+	epatch "${FILESDIR}"/makefile.am-typo.patch
+
+	# Disable build of plugins that are impossible to satisfy the dependencies of
+	local ech
+	for ech in ClojureEditor ; do
+		sed -i -e "/${ech}.jar/d" plugins/Makefile.am || die
+		mv plugins/${ech}/build.xml{,.donotbuild} || die
 	done
-	epatch ${FILESDIR}/mmcorepy_setup_add_zlib.patch
-	einfo "Patching v4l detection"
-	sed -i -e "s/libv4l2.h/linux\/videodev2.h/g" DeviceAdapters/configure.in
-	epatch ${FILESDIR}/andor_camera_detection.patch
-	epatch ${FILESDIR}/arduino_detection.patch
 
-	ebegin "Bootstrap started.  This can take several minutes"
-	sh mmUnixBuild.sh
-	eend
+	eautoreconf
 
-	einfo "Patching to prevent imagej collision"
-	sed -i -e '/cp $(IJJARPATH)/d' mmstudio/Makefile.am
-	einfo "Patching to prevent scripts removal"
-	sed -i -e '/rm -rf $(IJPATH)\/scripts.*$/d' scripts/Makefile.am
-
-	if use python; then
-		einfo "Patching numpy include directory"
-		local numpy_sitedir
-		numpy_includedir=$(python_get_sitedir)/numpy/core/include/numpy
-		sed -i -e "/include_dirs/s~=.*~= \[\"${numpy_includedir}\"\]~" MMCorePy_wrap/setup.py
-
-		einfo "Patching Python bindings to respect DESTDIR"
-		sed -i -e 's: $(DEVICEADAPTERPATH): $(DESTDIR)\/$(DEVICEADAPTERPATH):' MMCorePy_wrap/Makefile.am
-	fi
-
-	if use java; then
-		einfo "Patching to allow parallel compilations of plugins"
-		# making and clearing a single `build' directory prevents
-		# multiple plugins from being built simultaneously
-		sed -i -e 's/build/build_$@/g' plugins/Makefile.am
-
-		# TODO Make ebuilds for lwm, gaussian
-		#      Removing plugins requiring these deps until ebuilds made
-		REMOVE_MM_PLUGINS="DataBrowser Gaussian"
-		if ! use clojure_editor ; then
-			REMOVE_MM_PLUGINS="${REMOVE_MM_PLUGINS} ClojureEditor"
-		fi
-		einfo "Removing unsupported Clojure plugins: ${REMOVE_MM_PLUGINS}"
-		for PLUGIN in ${REMOVE_MM_PLUGINS}; do
-			einfo "Removing ${PLUGIN} plugin"
-			sed -i -e "/^all:/s/$PLUGIN\.jar//g" \
-				-e "/^\tcp $PLUGIN\.jar/d" \
-				plugins/Makefile.am
-		done
-
-		eautoconf
-		# FIXME	eautoreconf should replace eautoconf and
-		#	subversion_bootstrap lines, but dies because
-		#	./Makefile.am searches for the non-existent
-		#	SecretDeviceAdapters directory
-		#eautoreconf
-	fi
+	java-pkg-opt-2_src_prepare
+	use python && distutils-r1_src_prepare
 }
 
 src_configure() {
-	if use java; then
-		append-cppflags $(java-pkg_get-jni-cflags)
+	local conf_opts my_ant_flags=()
 
-		IMAGEJ_DIR=$(dirname `java-pkg_getjar imagej ij.jar`) \
-
-		ebegin 'Creating symlinks to .jar dependencies...'
-		mkdir -p ../3rdpartypublic/classext/
-		pushd ../3rdpartypublic/classext/
-		java-pkg_jar-from bsh bsh.jar bsh-2.0b4.jar
-		java-pkg_jar-from swingx-1.6 swingx.jar swingx-0.9.5.jar
-		java-pkg_jar-from commons-math-2 commons-math.jar commons-math-2.0.jar
-		java-pkg_jar-from swing-layout-1 swing-layout.jar swing-layout-1.0.4.jar
-		java-pkg_jar-from absolutelayout absolutelayout.jar AbsoluteLayout.jar
-		java-pkg_jar-from jfreechart-1.0 jfreechart.jar jfreechart-1.0.13.jar
-		java-pkg_jar-from jcommon-1.0 jcommon.jar jcommon-1.0.16.jar
-		java-pkg_jar-from imagej
-		java-pkg_jar-from clojure-1.4
-		if use clojure_editor; then
-			java-pkg_jar-from clooj clooj-0.3.4-standalone.jar clooj.jar
-		fi
-		java-pkg_jar-from protobuf protobuf.jar gproto.jar
-		java-pkg_jar-from TSFProto
-		java-pkg_jar-from bioformats
-
-		# TODO: Make these dep ebuilds and symlinks for plugins:
-		# lwm, gaussian
-		popd
-		eend
+	if use X ; then
+		local ij_jar=$(java-pkg_getjar imagej ij.jar)
+		local ij_dir=$(dirname ${ij_jar})
 	else
-		IMAGEJ_DIR='no'
+		conf_opts+=" --disable-java-app"
 	fi
 
-	econf \
-		--with-imagej=${IMAGEJ_DIR} \
-		$(use_enable python)
-}
+	if use java ; then
+		local jdk_home=$(java-config -O)
+		# ./configure fails when it sees eselect-java's bash scripts.
+		conf_opts+=" JAVA_HOME=${jdk_home}"
+		conf_opts+=" JAVA=$(java-config -J)"
+		conf_opts+=" JAVAC=$(java-config -c)"
+		conf_opts+=" JAR=$(java-config -j)"
+		my_ant_flags+=( -Dmm.build.java.lib.ant-contrib=$(java-pkg_getjar --build-only ant-contrib ant-contrib.jar) )
+		my_ant_flags+=( -Dmm.build.java.lib.junit=$(java-pkg_getjar --build-only junit-4 junit.jar) )
+		my_ant_flags+=( -Dmm.build.java.lib.hamcrest-core=$(java-pkg_getjar --build-only hamcrest-core-1.3 hamcrest-core.jar) )
+		my_ant_flags+=( -Dgentoo.classpath=$(java-pkg_getjars ${EANT_GENTOO_CLASSPATH}):$(java-pkg_getjars --with-dependencies ${ECLJ_GENTOO_CLASSPATH}) )
+	fi
 
-src_compile() {
-	emake
+	if use python ; then
+		python_setup
+		local python_home=$(python_get_library_path)
+	fi
+
+	ANTFLAGS="${my_ant_flags[@]}" \
+	econf \
+		$(use_enable X imagej-plugin ${ij_dir}) \
+		--disable-install-dependency-jars \
+		$(use_with java java ${jdk_home}) \
+		$(use_with python python ${python_home}) \
+		$(use_with X ij-jar ${ij_jar}) \
+		${conf_opts}
+
+	java-ant-2_src_configure
+	java-ant_rewrite-classpath buildscripts/javabuild.xml
+	java-ant_rewrite-classpath autofocus/buildscripts/autofocusbuild.xml
+	# manually hack gentoo.classpath into the clojure classpath
+	sed -i -e 's#.*</clj-classpath>.*#<pathelement path="${gentoo.classpath}"/>\n&#' \
+		buildscripts/clojurebuild.xml || die
 }
 
 src_install() {
 	emake DESTDIR="${D}" install
 
-	if use java; then
-		# FIXME	java-pkg_dolauncher should replace this bash script.
-		#	Problems encountered when attempting this were:
-		#	1. dolauncher uses the same name for the launcher and
-		#	   the package (gjl_package).  What we want for this
-		#	   package is:
-		#		/usr/bin/micro-manager
-		#	   to contain:
-		#		gjl_package=imagej
-		#	2. Fixing issue #1 above by editing the output file
-		#	   creates unusual behavior with Micro-Manager, always
-		#	   asking to select a dataset to open on startup.
-		cat <<-EOF > "${T}"/${PN}
-		#!/bin/bash
+	# TODO doc.
+	# TODO source.
+	# TODO examples.
+	use java && java-pkg_regjar /usr/share/imagej/lib/plugins/Micro-Manager/{MMCoreJ,MMJ_,MMAcqEngine}.jar
 
-		(
-		# MM plugins won't load without changing to this path
-		cd /usr/share/imagej/lib
-
-		\$(java-config --java) \\
-		   -mx1024m \\
-		   -cp \$(java-config -p imagej,libreadline-java) \\
-		   ij.ImageJ -run "Micro-Manager Studio"
-		) 2>&1 | tee >(logger -t micro-manager) -
-
-		exit 0
-		EOF
+	if use X; then
+		java-pkg_dolauncher ${PN} \
+			--main org.micromanager.MMStudio \
+			--java_args '-Xmx1024M -XX:MaxDirectMemorySize=1000G' \
+			--pkg_args '-Dmmcorej.library.loading.stderr.log=yes -Dmmcorej.library.path="/usr/share/imagej/lib" -Dorg.micromanager.plugin.path="/usr/share/imagej/lib/mmplugins" -Dorg.micromanager.autofocus.path="/usr/share/imagej/lib/mmautofocus"  -Dorg.micromanager.default.config.file="/usr/share/imagej/lib/MMConfig_demo.cfg" -Dorg.micromanager.corelog.dir=/tmp' \
 
 		make_desktop_entry "${PN}" "Micro-Manager Studio" imagej \
 			"Graphics;Science;Biology"
-
-		dobin "${T}"/${PN}
 	fi
 }

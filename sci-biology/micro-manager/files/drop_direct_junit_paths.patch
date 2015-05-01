@@ -1,0 +1,17 @@
+--- buildscripts/buildprops.xml	2015-01-30 14:24:07.000000000 -0500
++++ buildscripts/buildprops.xml.new	2015-04-28 17:56:34.096801301 -0400
+@@ -17,10 +17,12 @@
+ 		</classpath>
+ 	</taskdef>
+ 
++	<property name="mm.build.java.lib.junit" location="${mm.basedir}/dependencies/builddeps/junit-4.11.jar"/>
++	<property name="mm.build.java.lib.hamcrest-core" location="${mm.basedir}/dependencies/builddeps/hamcrest-core-1.3.jar"/>
+ 	<path id="mm.junit.classpath">
+ 		<!-- TODO Get this list from Ivy -->
+-		<pathelement location="${mm.basedir}/dependencies/builddeps/junit-4.11.jar"/>
+-		<pathelement location="${mm.basedir}/dependencies/builddeps/hamcrest-core-1.3.jar"/>
++		<pathelement location="${mm.build.java.lib.junit}"/>
++		<pathelement location="${mm.build.java.lib.hamcrest-core}"/>
+ 	</path>
+ 
+ 	<!-- Global definitions for building Micro-Manager -->

@@ -1,0 +1,10 @@
+--- a/buildscripts/buildprops.xml	2015-04-29 15:18:04.808204789 -0400
++++ b/buildscripts/buildprops.xml	2015-04-29 15:17:38.118204302 -0400
+@@ -133,6 +133,7 @@
+ 						<sysproperty key="clojure.compile.path" value="@{destdir}"/>
+ 						<sysproperty key="java.library.path" value="${mm.build.java.library.path}"/>
+ 						<sysproperty key="java.awt.headless" value="true"/>
++						<sysproperty key="java.util.prefs.userRoot" value="@{destdir}"/>
+ 						<classpath>
+ 							<pathelement location="@{destdir}"/>
+ 							<pathelement location="@{srcdir}"/>
