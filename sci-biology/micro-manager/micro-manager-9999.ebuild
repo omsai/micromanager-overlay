@@ -10,11 +10,13 @@ CONFIG_CHECK="VIDEO_V4L2"
 JAVA_ANT_DISABLE_ANT_CORE_DEP=1
 inherit autotools java-pkg-opt-2 java-ant-2 distutils-r1 linux-info vcs-snapshot
 
+MY_PN="micromanager-upstream"
+
 DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://www.micro-manager.org/"
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI="https://github.com/mdcurtis/micromanager-upstream.git"
+	EGIT_REPO_URI="https://github.com/mdcurtis/${MY_PN}.git"
 	SRC_URI=""
 else
 	SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
