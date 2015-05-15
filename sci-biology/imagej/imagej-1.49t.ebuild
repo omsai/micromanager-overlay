@@ -41,5 +41,5 @@ src_install() {
 		"Graphics;Science;Biology"
 
 	java-pkg_dojar *.jar
-	java-pkg_dolauncher ${PN} --main ij.ImageJ
+	java-pkg_dolauncher ${PN} --main ij.ImageJ --pwd /usr/share/imagej/lib
 }
