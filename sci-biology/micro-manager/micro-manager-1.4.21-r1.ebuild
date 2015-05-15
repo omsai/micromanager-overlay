@@ -14,7 +14,13 @@ MY_PN="micromanager-upstream"
 
 DESCRIPTION="The Open Source Microscopy Software"
 HOMEPAGE="http://www.micro-manager.org/"
-SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
+if [[ ${PV} == 9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/mdcurtis/${MY_PN}.git"
+	SRC_URI=""
+else
+	SRC_URI="http://github.com/mdcurtis/${MY_PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
+fi
 
 SLOT="0"
 LICENSE="GPL-3 BSD LGPL-2.1"
@@ -96,7 +102,6 @@ src_prepare() {
 	epatch "${FILESDIR}"/secretdevice.patch
 	epatch "${FILESDIR}"/drop_direct_junit_paths.patch
 	epatch "${FILESDIR}"/disable_prefs_during_clojure_builds.patch
-	epatch "${FILESDIR}"/zeisscan_header_case.patch
 	epatch "${FILESDIR}"/makefile.am-typo.patch
 
 	# Disable build of plugins that are impossible to satisfy the dependencies of
@@ -166,12 +171,19 @@ src_install() {
 	use java && java-pkg_regjar /usr/share/imagej/lib/plugins/Micro-Manager/{MMCoreJ,MMJ_,MMAcqEngine}.jar
 
 	if use X; then
-		java-pkg_dolauncher ${PN} \
+		java-pkg_dolauncher ${PN}-standalone \
 			--main org.micromanager.MMStudio \
+			--pwd /usr/share/imagej/lib \
 			--java_args '-Xmx1024M -XX:MaxDirectMemorySize=1000G' \
 			--pkg_args '-Dmmcorej.library.loading.stderr.log=yes -Dmmcorej.library.path="/usr/share/imagej/lib" -Dorg.micromanager.plugin.path="/usr/share/imagej/lib/mmplugins" -Dorg.micromanager.autofocus.path="/usr/share/imagej/lib/mmautofocus"  -Dorg.micromanager.default.config.file="/usr/share/imagej/lib/MMConfig_demo.cfg" -Dorg.micromanager.corelog.dir=/tmp' \
 
-		make_desktop_entry "${PN}" "Micro-Manager Studio" imagej \
+		java-pkg_dolauncher ${PN} \
+			--main ij.ImageJ \
+			--pwd /usr/share/imagej/lib \
+			--java_args '-Xmx1024M -XX:MaxDirectMemorySize=1000G' \
+			--pkg_args '-Dmmcorej.library.loading.stderr.log=yes -Dmmcorej.library.path="/usr/share/imagej/lib" -Dorg.micromanager.plugin.path="/usr/share/imagej/lib/mmplugins" -Dorg.micromanager.autofocus.path="/usr/share/imagej/lib/mmautofocus"  -Dorg.micromanager.default.config.file="/usr/share/imagej/lib/MMConfig_demo.cfg" -Dorg.micromanager.corelog.dir=/tmp' \
+
+		make_desktop_entry "${PN} -eval 'run(\"Micro-Manager Studio\");'" "Micro-Manager Studio" ImageJ \
 			"Graphics;Science;Biology"
 	fi
 }

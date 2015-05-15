@@ -171,12 +171,19 @@ src_install() {
 	use java && java-pkg_regjar /usr/share/imagej/lib/plugins/Micro-Manager/{MMCoreJ,MMJ_,MMAcqEngine}.jar
 
 	if use X; then
-		java-pkg_dolauncher ${PN} \
+		java-pkg_dolauncher ${PN}-standalone \
 			--main org.micromanager.MMStudio \
+			--pwd /usr/share/imagej/lib \
 			--java_args '-Xmx1024M -XX:MaxDirectMemorySize=1000G' \
 			--pkg_args '-Dmmcorej.library.loading.stderr.log=yes -Dmmcorej.library.path="/usr/share/imagej/lib" -Dorg.micromanager.plugin.path="/usr/share/imagej/lib/mmplugins" -Dorg.micromanager.autofocus.path="/usr/share/imagej/lib/mmautofocus"  -Dorg.micromanager.default.config.file="/usr/share/imagej/lib/MMConfig_demo.cfg" -Dorg.micromanager.corelog.dir=/tmp' \
 
-		make_desktop_entry "${PN}" "Micro-Manager Studio" imagej \
+		java-pkg_dolauncher ${PN} \
+			--main ij.ImageJ \
+			--pwd /usr/share/imagej/lib \
+			--java_args '-Xmx1024M -XX:MaxDirectMemorySize=1000G' \
+			--pkg_args '-Dmmcorej.library.loading.stderr.log=yes -Dmmcorej.library.path="/usr/share/imagej/lib" -Dorg.micromanager.plugin.path="/usr/share/imagej/lib/mmplugins" -Dorg.micromanager.autofocus.path="/usr/share/imagej/lib/mmautofocus"  -Dorg.micromanager.default.config.file="/usr/share/imagej/lib/MMConfig_demo.cfg" -Dorg.micromanager.corelog.dir=/tmp' \
+
+		make_desktop_entry "${PN} -eval 'run(\"Micro-Manager Studio\");'" "Micro-Manager Studio" ImageJ \
 			"Graphics;Science;Biology"
 	fi
 }
