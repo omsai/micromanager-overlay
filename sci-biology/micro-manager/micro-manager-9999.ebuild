@@ -146,6 +146,7 @@ src_configure() {
 	fi
 
 	ANTFLAGS="${my_ant_flags[@]}" \
+	CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" AR="$(tc-getAR)" RANLIB="$(tc-getRANLIB)" \
 	econf \
 		$(use_enable X imagej-plugin ${ij_dir}) \
 		--disable-install-dependency-jars \
