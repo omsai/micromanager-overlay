@@ -23,13 +23,16 @@ DEPEND=">=virtual/jdk-1.6
 source? ( app-arch/zip )"
 
 S=${WORKDIR}/source
-EANT_BUILD_TARGET="build"
-EANT_DOCS_TARGET="javadocs"
-EANT_EXTRA_ARGS="
+
+pkg_setup() {
+	export EANT_BUILD_TARGET="build"
+	export EANT_DOCS_TARGET="javadocs"
+	export EANT_EXTRA_ARGS="
 -DImageJ.default=${EANT_BUILD_TARGET}
 -Djavac.debug=$(use debug && echo on || echo off)
 $(use_doc ${EANT_DOCS_TARGET})
 "
+}
 
 src_install() {
 	use doc && java-pkg_dojavadoc ../api/
